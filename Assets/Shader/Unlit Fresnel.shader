@@ -62,7 +62,7 @@ Shader "my_Shader/Unlit_Fresnel"
                 Varyings output;
                 VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
 
-                output.WS = mul(unity_ObjectToWorld, input.positionOS.xyz);
+                output.WS = mul(unity_ObjectToWorld, float4(input.positionOS.xyz,1));
                 
                 output.V = GetWorldSpaceViewDir(input.positionOS.xyz);
                 //output.N = mul(input.normalOS, (float3x3)unity_WorldToObject);
