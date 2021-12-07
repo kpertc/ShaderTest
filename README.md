@@ -1,4 +1,3 @@
 # ShaderTest
-Personal Shader Study
 
-This respository is used for testing shader results and procedural generation tools results 
+This respository is for testing shaders results and procedural generation tools results 
