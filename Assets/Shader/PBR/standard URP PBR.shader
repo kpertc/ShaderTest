@@ -1,4 +1,4 @@
-Shader "my shader/PBR/S URP PBR"
+Shader "my_Shader/PBR/S URP PBR"
 {
     Properties
     {
