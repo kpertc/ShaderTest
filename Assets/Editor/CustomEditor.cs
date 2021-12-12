@@ -7,7 +7,7 @@ using UnityEditor;
 public class CustomEditor : EditorWindow
 {
     //Menu Item + Hot Key + Init Window
-    [MenuItem("Custom/Custom")]
+    [MenuItem("Custom/Custom  %#]")]
     static void Init() => GetWindow<CustomEditor>("The Title");
 
     public enum things 
