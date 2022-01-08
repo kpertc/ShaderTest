@@ -10,7 +10,7 @@ public class Properties : MonoBehaviour
 
     void Start()
     {
-        damage = _enemyProperties.damage;
+        //damage = _enemyProperties.damage;
     }
 
     void Update()
