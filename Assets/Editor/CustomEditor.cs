@@ -60,9 +60,13 @@ public class CustomEditor : EditorWindow
         foldoutState = EditorGUILayout.Foldout(foldoutState, "Foldout"); // 折叠菜单状态
         if (foldoutState)
         {
-            GUILayout.Label("Content1");
-            GUILayout.Label("Content2");
-            GUILayout.Label("Content3");
+            EditorGUI.indentLevel++; // indentlevel only work for Editor Elements
+            
+            EditorGUILayout.LabelField("Content1");
+            EditorGUILayout.LabelField("Content1");
+            EditorGUILayout.LabelField("Content1");
+            
+            EditorGUI.indentLevel--;
         }
             
         //Progress Bar
