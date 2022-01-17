@@ -19,6 +19,8 @@ public class CustomEditor : EditorWindow
 
     Object _transform;
 
+    bool foldoutState;
+    
     private void OnGUI()
     {
         
@@ -51,7 +53,33 @@ public class CustomEditor : EditorWindow
             
             //ObjectField
             _transform = EditorGUILayout.ObjectField("Text Example: ", null, typeof(Transform), true);
-
+            
         }
+        
+        //Foldout
+        foldoutState = EditorGUILayout.Foldout(foldoutState, "Foldout"); // 折叠菜单状态
+        if (foldoutState)
+        {
+            GUILayout.Label("Content1");
+            GUILayout.Label("Content2");
+            GUILayout.Label("Content3");
+        }
+            
+        //Progress Bar
+        
+        
+        //HelpBox
+        EditorGUILayout.HelpBox("HelpBox Type:None", MessageType.None);
+        EditorGUILayout.HelpBox("HelpBox Type:Info", MessageType.Info);
+        EditorGUILayout.HelpBox("HelpBox Type:Error", MessageType.Error);
+        EditorGUILayout.HelpBox("HelpBox Type:Warning", MessageType.Warning);
+
     }
+    
+    /*
+    public void OnInspectorUpdate()
+    {
+        this.Repaint();
+    }
+    */
 }
