@@ -5,8 +5,10 @@ using UnityEngine;
 public class Properties : MonoBehaviour
 {
     public float damage;
-
+    
     public EnemyProperties _enemyProperties;
+
+    public int[] angles;
 
     void Start()
     {

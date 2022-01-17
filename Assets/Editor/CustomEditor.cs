@@ -21,7 +21,7 @@ public class CustomEditor : EditorWindow
         minSize = new Vector2(300, 300);
         
         //Tabs
-        toolbarInt = GUI.Toolbar(new Rect(3, 3, position.width - 6, 25), toolbarInt, new string[] {"基本元素", " 1", " 2"});
+        toolbarInt = GUI.Toolbar(new Rect(3, 3, position.width - 6, 25), toolbarInt, new string[] {"基本", " 1", "样式"});
 
         switch (toolbarInt)
         {
@@ -89,25 +89,35 @@ public class CustomEditor : EditorWindow
                 
                 //Display Dialog
                 EditorGUILayout.LabelField("Dialog");
+                
+                GUILayout.BeginHorizontal();
                 if (GUILayout.Button("With Cancel"))
                     EditorUtility.DisplayDialog("This is Title", "This is Message", "OK Text", "Cancel Text");
                 
                 if (GUILayout.Button("No Cancel"))
                     EditorUtility.DisplayDialog("This is Title", "This is Message", "OK Text");
+                GUILayout.EndHorizontal();
                 
                 EditorGUILayout.Space(10);
                 
-                //Progress Bar
-                EditorGUILayout.LabelField("Progress Bar");
+                //Progress Bar (Popup Window)
+                EditorGUILayout.LabelField("Progress Bar (Popup)");
+                
+                GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Start Progress Bar"))
                     EditorUtility.DisplayProgressBar("Simple Progress Bar", "Doing some work...", 0.5f);
                 
                 if (GUILayout.Button("End Progress Bar"))
                     EditorUtility.ClearProgressBar();
+                GUILayout.EndHorizontal();
+                //EditorGUILayout.Separator();
                 
-                EditorGUILayout.Separator();
+                EditorGUILayout.Space(10);
                 
-                //EditorGUI.ProgressBar(new Rect(3, 100, position.width - 6, 20), 0.5f, "Sample Text");
+                //Progress Bar
+                EditorGUILayout.LabelField("Progress Bar (UI)");
+                Rect rect = GUILayoutUtility.GetRect(18, 18, "TextField"); //Use rect as Layout Base
+                EditorGUI.ProgressBar(rect, 0.5f, "Sample Text");
 
                 break;
             
