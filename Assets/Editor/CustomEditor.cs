@@ -58,6 +58,8 @@ public class CustomEditor : EditorWindow
             
                 }
                 
+                EditorGUILayout.Space(10);
+                
                 //PrefixLabel
                 EditorGUILayout.LabelField("PrefixLabel");
                 int ammo = 10;
@@ -78,7 +80,27 @@ public class CustomEditor : EditorWindow
             
                     EditorGUI.indentLevel--;
                 }
-                    
+                
+                EditorGUILayout.Space(10);
+                
+                //Display Dialog
+                EditorGUILayout.LabelField("Dialog");
+                if (GUILayout.Button("With Cancel"))
+                    EditorUtility.DisplayDialog("This is Title", "This is Message", "OK Text", "Cancel Text");
+                
+                if (GUILayout.Button("No Cancel"))
+                    EditorUtility.DisplayDialog("This is Title", "This is Message", "OK Text");
+                
+                EditorGUILayout.Space(10);
+                
+                //Progress Bar
+                EditorGUILayout.LabelField("Progress Bar");
+                if (GUILayout.Button("Start Progress Bar"))
+                    EditorUtility.DisplayProgressBar("Simple Progress Bar", "Doing some work...", 0.5f);
+                
+                if (GUILayout.Button("End Progress Bar"))
+                    EditorUtility.ClearProgressBar();
+
                 break;
             
             case 1:
