@@ -18,6 +18,8 @@ public class CustomEditor : EditorWindow
 
     private void OnGUI()
     {
+        minSize = new Vector2(300, 300);
+        
         //Tabs
         toolbarInt = GUI.Toolbar(new Rect(3, 3, position.width - 6, 25), toolbarInt, new string[] {"基本元素", " 1", " 2"});
 
@@ -42,6 +44,8 @@ public class CustomEditor : EditorWindow
                     someValue = GUILayout.HorizontalSlider(someValue, -1, 1);
             
                     GUILayout.EndHorizontal();
+                    
+                    //TODO MinMaxSlider
             
                     //Space
                     GUILayout.Space(20);
@@ -100,6 +104,10 @@ public class CustomEditor : EditorWindow
                 
                 if (GUILayout.Button("End Progress Bar"))
                     EditorUtility.ClearProgressBar();
+                
+                EditorGUILayout.Separator();
+                
+                //EditorGUI.ProgressBar(new Rect(3, 100, position.width - 6, 20), 0.5f, "Sample Text");
 
                 break;
             
