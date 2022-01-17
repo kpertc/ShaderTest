@@ -15,7 +15,8 @@ public class CustomEditor : EditorWindow
     Object _transform;
     bool foldoutState;
     private int toolbarInt;
-
+    
+    
     private void OnGUI()
     {
         minSize = new Vector2(300, 300);
@@ -125,7 +126,26 @@ public class CustomEditor : EditorWindow
                 
                 EditorGUILayout.Space(30);
                 
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Enable OnSceneGUI"))
+                {
                     
+                }
+                
+                if (SceneView.duringSceneGui == null)
+                {
+                    
+                }
+                
+                    SceneView.duringSceneGui += OnSceneGUI;
+                    SceneView.RepaintAll();
+                
+                if (GUILayout.Button("Disable OnSceneGUI"))
+                    SceneView.duringSceneGui -= OnSceneGUI;
+                    SceneView.RepaintAll();
+                
+                GUILayout.EndHorizontal();
+
                 break;
             
             case 2:
@@ -142,6 +162,18 @@ public class CustomEditor : EditorWindow
                     
                 break;
         }
+
+        
+    }
+    
+    void OnSceneGUI(SceneView sceneview)
+    {
+        Handles.BeginGUI();
+ 
+        if (GUILayout.Button("Button"))
+            Debug.Log("Button Clicked");
+ 
+        Handles.EndGUI();
     }
     
     /*

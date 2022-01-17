@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,9 +17,9 @@ public class SerializedEditor : Editor
         
         sp_stringArrayExmple = serializedObject.FindProperty("stringArrayExmple");
         sp_stringListExample = serializedObject.FindProperty("stringListExample");
-        
+
     }
-    
+
     public override void OnInspectorGUI()
     {
         EditorGUILayout.PropertyField(sp_intExample, new GUIContent("intExample"));
@@ -27,5 +28,19 @@ public class SerializedEditor : Editor
         EditorGUILayout.PropertyField(sp_stringListExample, new GUIContent("listString"));
 
         GUILayout.Button("Example Button");
+    }
+    
+    
+    void OnSceneGUI () {
+        Handles.BeginGUI();
+   
+        Rect rect = new Rect(10, 10, 100, 50);
+        GUI.Box(rect, "Button");
+        if(Event.current.type == EventType.MouseDown && rect.Contains(Event.current.mousePosition))
+            Debug.Log("press");
+   
+        Handles.EndGUI();
+   
+        SceneView.RepaintAll ();
     }
 }
