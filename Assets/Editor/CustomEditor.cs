@@ -22,7 +22,7 @@ public class CustomEditor : EditorWindow
         minSize = new Vector2(300, 300);
         
         //Tabs
-        toolbarInt = GUI.Toolbar(new Rect(3, 3, position.width - 6, 25), toolbarInt, new string[] {"基本", " 1", "样式"});
+        toolbarInt = GUI.Toolbar(new Rect(3, 3, position.width - 6, 25), toolbarInt, new string[] {"Essentials", "OnSceneGUI", "Layout", "Style"});
 
         switch (toolbarInt)
         {
@@ -128,15 +128,6 @@ public class CustomEditor : EditorWindow
                 
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button("Enable OnSceneGUI"))
-                {
-                    
-                }
-                
-                if (SceneView.duringSceneGui == null)
-                {
-                    
-                }
-                
                     SceneView.duringSceneGui += OnSceneGUI;
                     SceneView.RepaintAll();
                 
@@ -149,6 +140,27 @@ public class CustomEditor : EditorWindow
                 break;
             
             case 2:
+                EditorGUILayout.Space(30);
+                
+                EditorGUILayout.LabelField("Text1", EditorStyles.helpBox);
+
+                EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("Text1");
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("Text2");
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.EndHorizontal();
+                
+                EditorGUILayout.LabelField("Text3", EditorStyles.helpBox);
+                
+                break;
+            
+            case 3:
                 
                 EditorGUILayout.Space(30);
                 
@@ -162,8 +174,6 @@ public class CustomEditor : EditorWindow
                     
                 break;
         }
-
-        
     }
     
     void OnSceneGUI(SceneView sceneview)

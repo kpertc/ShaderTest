@@ -18,8 +18,7 @@ public class SerializedEditor : Editor
         sp_stringArrayExmple = serializedObject.FindProperty("stringArrayExmple");
         sp_stringListExample = serializedObject.FindProperty("stringListExample");
 
-    }
-
+    } 
     public override void OnInspectorGUI()
     {
         EditorGUILayout.PropertyField(sp_intExample, new GUIContent("intExample"));
