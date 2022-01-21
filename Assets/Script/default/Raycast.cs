@@ -11,15 +11,15 @@ public class Raycast : MonoBehaviour
     public string CastedObject;
 
     private Vector3 hitPosition;
+    public Vector3 hitPositionNormal;
+    public Vector3 hitPositionNormalRotation;
 
+//[Range(0.2f, 0.8f)] public float drawSphereSize = 0.5f;
 
-
-
-    [Range(0.2f, 0.8f)] public float drawSphereSize = 0.5f;
-
-
-
-
+    [Header("DrawGizmo")]
+    public bool isDrawSeldDir;
+    public bool isDrawHitGizmo;
+    public bool isDrawHitNormal;
 
     // Update is called once per frame
     void Update()
@@ -29,26 +29,30 @@ public class Raycast : MonoBehaviour
         isCasted = Physics.Raycast(ray, out RaycastHit hit);
 
         if (isCasted) {
-
             CastedObject = hit.collider.name;
-
             hitPosition = hit.point;
+            hitPositionNormal = hit.normal;
         }
 
-        else
-        {
-            CastedObject = "Nothing";
-
-            hitPosition = new Vector3 (0,0,0);
-        }
-
-        Handles.color = Color.red;
-
-        Handles.DrawWireCube(new Vector3(0,0,0), new Vector3(1,1,1));
-
+        else CastedObject = "Nothing";
     }
 
     void OnDrawGizmos()
+    {
+        if (isDrawSeldDir) drawSelfDir();
+
+        if (isCasted)
+        {
+            if (isDrawHitGizmo) Gizmos.DrawIcon(hitPosition, "aim_1024.png", true);
+
+            if (isDrawHitNormal) {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawLine(hitPosition, hitPosition + hitPositionNormal);
+            }
+        }
+    }
+
+    void drawSelfDir()
     {
         //Forward
         Gizmos.color = Color.blue;
@@ -61,13 +65,6 @@ public class Raycast : MonoBehaviour
         //right
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + transform.right);
-
-        //Gizmos.DrawSphere(hitPosition, drawSphereSize);
-
-        Gizmos.DrawIcon(hitPosition, "aim_1024.png", true);
-        
-        //Gizmos.DrawCube(transform.position + transform.forward, new Vector3(1,1,1));
-
-        //Debug.Log("transform.forward: " + transform.forward);
     }
+
 }

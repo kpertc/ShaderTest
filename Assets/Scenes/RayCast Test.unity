@@ -408,14 +408,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 935450628}
-  m_LocalRotation: {x: -0.10585402, y: -0.19007507, z: 0.2538192, w: 0.9424661}
+  m_LocalRotation: {x: -0.14003068, y: -0.196795, z: 0.05181862, w: 0.96900874}
   m_LocalPosition: {x: 9.21, y: 0.14, z: -3.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: -5.914, y: -24.47, z: 31.429}
+  m_LocalEulerAnglesHint: {x: -14.536, y: -24.142, z: 9.247}
 --- !u!114 &935450634
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -430,7 +430,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isCasted: 1
   CastedObject: Sphere
-  drawSphereSize: 0.2
+  hitPositionNormal: {x: 0.5005726, y: 0.004300402, z: -0.8656838}
+  hitPositionNormalRotation: {x: 0, y: 0, z: 0}
+  isDrawSeldDir: 1
+  isDrawHitGizmo: 1
+  isDrawHitNormal: 1
 --- !u!1 &1835233253
 GameObject:
   m_ObjectHideFlags: 0
