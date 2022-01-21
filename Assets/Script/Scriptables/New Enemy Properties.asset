@@ -12,15 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c840dea6d587e94ab18713f96efa999, type: 3}
   m_Name: New Enemy Properties
   m_EditorClassIdentifier: 
-  characterColor: {r: 1, g: 0, b: 0, a: 1}
-  damage: 10
-  defense: 5
-  radius: 5
-  brandWebsite:
-  - 123
-  - 123
-  - 23
-  - 23
-  inspector:
-    brand: yhtte
-    website: wewqe
+  intExample: 0
+  floatExample: 0
+  colorExample: {r: 1, g: 0.08962262, b: 0.53333336, a: 0.8352941}
+  stringArrayExmple:
+  - 
+  - 
+  - 
+  stringListExample:
+  - 
+  - 
+  - 
