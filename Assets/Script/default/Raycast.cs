@@ -11,30 +11,60 @@ public class Raycast : MonoBehaviour
     public string CastedObject;
 
     private Vector3 hitPosition;
-    public Vector3 hitPositionNormal;
-    public Vector3 hitPositionNormalRotation;
+    private Vector3 hitPositionNormal;
+    private Vector3 hitPositionNormalRotation;
+    public float hitPointDistance;
 
-//[Range(0.2f, 0.8f)] public float drawSphereSize = 0.5f;
 
     [Header("DrawGizmo")]
     public bool isDrawSeldDir;
     public bool isDrawHitGizmo;
     public bool isDrawHitNormal;
 
+    [Header("UI_Sprite")]
+    public GameObject UISprite;
+    [Range(0f, 1f)]  public float UISprite_surfaceOffset;
+    Renderer UISprite_renderer;
+
+    private void Start()
+    {
+        
+    }
     // Update is called once per frame
     void Update()
     {
+        // inits
+        UISprite_renderer = UISprite.GetComponent<Renderer>();
+
+
+        // Updates
         Ray ray = new Ray(transform.position, transform.forward);
 
         isCasted = Physics.Raycast(ray, out RaycastHit hit);
 
         if (isCasted) {
             CastedObject = hit.collider.name;
+
+            // hit & Gizmos 
             hitPosition = hit.point;
             hitPositionNormal = hit.normal;
+            hitPositionNormalRotation = Quaternion.LookRotation(- hitPositionNormal, Vector3.up).eulerAngles;
+
+            // Distance
+            hitPointDistance = Vector3.Distance(transform.position, hitPosition);
+
+            // UISprite
+            UISprite_renderer.enabled = true;
+            UISprite.transform.position = hit.point + hit.normal * UISprite_surfaceOffset;
+            UISprite.transform.eulerAngles = hitPositionNormalRotation;
         }
 
-        else CastedObject = "Nothing";
+        else
+        {
+            CastedObject = "Nothing";
+
+            UISprite_renderer.enabled = false;
+        }
     }
 
     void OnDrawGizmos()
@@ -46,7 +76,7 @@ public class Raycast : MonoBehaviour
             if (isDrawHitGizmo) Gizmos.DrawIcon(hitPosition, "aim_1024.png", true);
 
             if (isDrawHitNormal) {
-                Gizmos.color = Color.blue;
+                Gizmos.color = Color.green;
                 Gizmos.DrawLine(hitPosition, hitPosition + hitPositionNormal);
             }
         }
