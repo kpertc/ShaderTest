@@ -64,7 +64,14 @@ public class CustomEditor : EditorWindow
                 }
                 
                 EditorGUILayout.Space(10);
-                
+
+                //Modular Button
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Button("miniButtonLeft", EditorStyles.miniButtonLeft);
+                GUILayout.Button("miniButtonMid", EditorStyles.miniButtonMid);
+                GUILayout.Button("miniButtonRight", EditorStyles.miniButtonRight);
+                EditorGUILayout.EndHorizontal();
+            
                 //PrefixLabel
                 EditorGUILayout.LabelField("PrefixLabel");
                 int ammo = 10;
@@ -72,8 +79,7 @@ public class CustomEditor : EditorWindow
                 EditorGUILayout.PrefixLabel("Ammo");  //Label to show to the left of the control.
                 ammo = EditorGUILayout.IntField(ammo);
                 EditorGUILayout.EndHorizontal();
-                
-                //Foldout
+                                //Foldout
                 foldoutState = EditorGUILayout.Foldout(foldoutState, "Foldout"); // 折叠菜单状态
                 if (foldoutState)
                 {

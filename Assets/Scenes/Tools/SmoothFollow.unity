@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028352, g: 0.22571376, b: 0.30692244, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -265,7 +265,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 691884899}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.46, y: 4.9998074, z: 7.54}
+  m_LocalPosition: {x: 4.39, y: -0.24000001, z: -8.84}
   m_LocalScale: {x: 0.22218, y: 0.22218, z: 0.22218}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -362,7 +362,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 908513172}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.79, y: 4.9998074, z: 5.3599997}
+  m_LocalPosition: {x: 2.3899999, y: -4.24, z: -8.84}
   m_LocalScale: {x: 0.22218, y: 0.22218, z: 0.22218}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -459,7 +459,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1088607266}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.46, y: 4.9998074, z: 1.96}
+  m_LocalPosition: {x: 3.39, y: -0.24000001, z: -9.84}
   m_LocalScale: {x: 0.22218, y: 0.22218, z: 0.22218}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -542,6 +542,7 @@ GameObject:
   - component: {fileID: 1710602209}
   - component: {fileID: 1710602208}
   - component: {fileID: 1710602212}
+  - component: {fileID: 1710602213}
   m_Layer: 0
   m_Name: main
   m_TagString: Untagged
@@ -620,7 +621,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1710602206}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: -0.63, y: 0, z: -0.45}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -641,14 +642,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   followers:
   - obj: {fileID: 1901513634}
-    Offset: {x: 1, y: 0, z: 0}
+    Offset: {x: 1, y: -2, z: 0}
   - obj: {fileID: 1088607266}
-    Offset: {x: 0, y: 1, z: 0}
+    Offset: {x: 0, y: 2, z: 0}
   - obj: {fileID: 691884899}
-    Offset: {x: 0, y: 0, z: 1}
+    Offset: {x: 1, y: 2, z: 1}
   - obj: {fileID: 908513172}
-    Offset: {x: -1, y: 0, z: 0}
+    Offset: {x: -1, y: -2, z: 1}
   smoothTime: 0.3
+  isDrawBeizerCurve: 1
+--- !u!114 &1710602213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1710602206}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b38ecf0b770f04bde98c22b1529a83e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sin_Transform: {x: 1, y: 1, z: 1}
+  rotation_speed: {x: 0, y: 0, z: 0}
 --- !u!1 &1804046056
 GameObject:
   m_ObjectHideFlags: 0
@@ -774,7 +790,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1901513634}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.6, y: 4.9998074, z: 4.87}
+  m_LocalPosition: {x: 4.39, y: -4.24, z: -9.84}
   m_LocalScale: {x: 0.22218, y: 0.22218, z: 0.22218}
   m_ConstrainProportionsScale: 0
   m_Children: []
