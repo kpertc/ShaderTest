@@ -4,7 +4,7 @@ using UnityEditor;
 public class CustomEditor : EditorWindow
 {
     //Menu Item + Hot Key + Init Window
-    [MenuItem("Custom/Custom  %#]")]
+    [MenuItem("Custom/EditorWindows/EditorWindowExamples  %#]")]
     static void Init() => GetWindow<CustomEditor>("The Title");
 
     //Variables
@@ -31,7 +31,8 @@ public class CustomEditor : EditorWindow
                 EditorGUILayout.Space(30);
                 
                 GUILayout.Label("This is a Label");
-        
+                GUILayout.Label("This is a BOLD Label", EditorStyles.boldLabel);
+
                 using (new GUILayout.VerticalScope(EditorStyles.helpBox)) //safe fucntion
                 {
                     //Button
