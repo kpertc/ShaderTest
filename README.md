@@ -7,7 +7,7 @@ ___
 ##### Basic
 
 + Move / Sin Wave Move
-+ Smooth Follow
++ Multiple Objects Smooth Follow
 
 ##### shaders
 
@@ -19,7 +19,7 @@ ___
 
 + Quad Mesh Generation
 + Gizmo Draw Vector
-+ Raycast Detection
++ Raycast Detection with Hit Normal Direction
 + One Segment Bezier Curve
 + Debug.DrawLine
 
