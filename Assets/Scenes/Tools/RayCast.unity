@@ -330,9 +330,10 @@ GameObject:
   - component: {fileID: 935450632}
   - component: {fileID: 935450631}
   - component: {fileID: 935450630}
+  - component: {fileID: 935450635}
   - component: {fileID: 935450634}
   m_Layer: 0
-  m_Name: Main
+  m_Name: Virtual_Controller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -436,6 +437,20 @@ MonoBehaviour:
   isDrawHitNormal: 1
   UISprite: {fileID: 1429373400}
   UISprite_surfaceOffset: 0.25
+--- !u!114 &935450635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935450628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 409e8d6e53d32457c8777d425457eb66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mouseX: 0
+  mouseY: 0
 --- !u!1 &1299544842
 GameObject:
   m_ObjectHideFlags: 0
@@ -644,14 +659,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1835233253}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0, y: -0.49966207, z: -0, w: 0.8662205}
+  m_LocalPosition: {x: 15.7, y: 0.2, z: -6.8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -59.955, z: 0}
 --- !u!114 &1835233258
 MonoBehaviour:
   m_ObjectHideFlags: 0

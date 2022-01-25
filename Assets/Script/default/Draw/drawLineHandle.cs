@@ -17,9 +17,8 @@ public class drawLineHandle : MonoBehaviour
     private void OnDrawGizmos()
     {
         curve1.t = t;
-        curve1.vis(gizmoSize);
+        curve1.visMono(gizmoSize);
     }
-}
 
 
 public static class drawLineUtil {
@@ -70,16 +69,20 @@ public class CurveSegment
     }
 
     // vis -> Visual Preview
-    public void vis(float gizmoSize)
+    public void visMono(float gizmoSize)
     {
         GetTPoint();
         vis_Gizmo_CurvePoints(gizmoSize);
         vis_Handle_TPoint();
         vis_handles_Bezier(gizmoSize);
+    }
+
+    public void visEditor()
+    {
         vis_handles_DoPositionHandle();
     }
 
-    void vis_Gizmo_CurvePoints(float gizmoSize)
+        void vis_Gizmo_CurvePoints(float gizmoSize)
     {
         //Anchors
         Gizmos.color = Color.white;
@@ -114,52 +117,28 @@ public class CurveSegment
 
 
 
-[CustomEditor(typeof(drawLineHandle))]
-public class drawLineHandleEditor : Editor
-{
-    
-
-    protected virtual void OnSceneGUI()
+    [CustomEditor(typeof(drawLineHandle))]
+    public class drawLineHandleEditor : Editor
     {
-        drawLineHandle handleExample = (drawLineHandle)target;
 
-        if (handleExample == null) return;
 
-        Handles.color = Color.yellow;
+        protected virtual void OnSceneGUI()
+        {
+            drawLineHandle handleExample = (drawLineHandle)target;
 
-        GUIStyle style = new GUIStyle();
-        style.normal.textColor = Color.green;
+            if (handleExample == null) return;
 
-        Vector3 position = handleExample.transform.position + Vector3.up * 2f;
-        string posString = position.ToString();
+            Handles.color = Color.yellow;
 
-        /*        Handles.Label(position,
-                    posString + "\nShieldArea: " +
-                    handleExample.shieldArea.ToString(),
-                    style
-                );*/
+            GUIStyle style = new GUIStyle();
+            style.normal.textColor = Color.green;
 
-        /*Handles.BeginGUI();
-        if (GUILayout.Button("Reset Area", GUILayout.Width(100)))
-            Handles.EndGUI();*/
+            Vector3 position = handleExample.transform.position + Vector3.up * 2f;
+            string posString = position.ToString();
 
-        /*        foreach (Vector3 _position in handleExample.positions)
-                {
-                    //_position = Handles.DoPositionHandle(_position, Quaternion.identity);
-                }*/
+            handleExample.curve1.visEditor();
+        }
 
-        //Debug.Log(pos);
-
-        //drawLineHandle.handlesDoPositionHandle(handleExample.curve1);
-
-        //handleExample.curve1.anchor1 = Handles.DoPositionHandle(handleExample.curve1.anchor1, Quaternion.identity);
-
-        handleExample.curve1.anchor1 = Handles.DoPositionHandle(handleExample.curve1.anchor1, Quaternion.identity);
-        handleExample.curve1.anchor2 = Handles.DoPositionHandle(handleExample.curve1.anchor2, Quaternion.identity);
-        handleExample.curve1.controlPoint1 = Handles.DoPositionHandle(handleExample.curve1.controlPoint1, Quaternion.identity);
-        handleExample.curve1.controlPoint2 = Handles.DoPositionHandle(handleExample.curve1.controlPoint2, Quaternion.identity);
     }
-
-
 
 }
