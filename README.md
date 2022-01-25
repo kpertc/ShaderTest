@@ -6,7 +6,8 @@ ___
 
 ##### Basic
 
-+ AutoMove
++ Move / Sin Wave Move
++ Smooth Follow
 
 ##### shaders
 
