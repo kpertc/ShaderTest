@@ -9,70 +9,15 @@ public class drawLineHandle : MonoBehaviour
 {
     [Range(0f,1f)] public float t = 0;
 
-    public Transform[] positions;
-
     [Header("Gizmo Size")] 
-    [Range(0f,2f)] public float gizmoSize = 0;
+    [Range(0f,2f)] public static float gizmoSize = 1;
 
-    public CurvePoints curve1;
-
-
-    [System.Serializable]
-    public struct CurvePoints
-    {
-        public Vector3 anchor1;
-        public Vector3 controlPoint1;
-
-        public Vector3 anchor2;
-        public Vector3 controlPoint2;
-    }
+    public CurveSegment curve1;
 
     private void OnDrawGizmos()
     {
-        handlesDrawBezier(curve1);
-
-        visualizeCurvePoints(curve1, gizmoSize);
-
-        Gizmos.DrawSphere(GetBezierPoint(curve1, t), gizmoSize);
-    }
-    
-
-    // Useful Functions
-    static void handlesDrawBezier(CurvePoints cps) => Handles.DrawBezier(cps.anchor1, cps.anchor2, cps.controlPoint1, cps.controlPoint2, Color.white, EditorGUIUtility.whiteTexture, 1f);
-    static Vector3 GetBezierPoint (CurvePoints cps, float t) {
-
-        Vector3 a = Vector3.Lerp(cps.anchor1, cps.controlPoint1, t);
-        Vector3 b = Vector3.Lerp(cps.controlPoint1, cps.controlPoint2, t);
-        Vector3 c = Vector3.Lerp(cps.controlPoint2, cps.anchor2, t);
-
-        Vector3 d = Vector3.Lerp(a, b, t);
-        Vector3 e = Vector3.Lerp(b, c, t);
-
-        return Vector3.Lerp(d, e, t);
-    }
-
-    static void visualizeCurvePoints(CurvePoints cps, float size) {
-        //Anchors
-        Gizmos.color = Color.white;
-        Gizmos.DrawSphere(cps.anchor1, size);
-        Gizmos.DrawSphere(cps.anchor2, size);
-
-        //ControlPoint
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(cps.controlPoint1, size * 0.5f);
-        Gizmos.DrawSphere(cps.controlPoint2, size * 0.5f);
-
-        //Connect Points & Handles
-        Gizmos.DrawLine(cps.anchor1, cps.controlPoint1);
-        Gizmos.DrawLine(cps.anchor2, cps.controlPoint2);
-    }
-
-    public static void handlesDoPositionHandle(CurvePoints cps)
-    {
-        cps.anchor1 = Handles.DoPositionHandle(cps.anchor1, Quaternion.identity);
-        cps.anchor2 = Handles.DoPositionHandle(cps.anchor2, Quaternion.identity);
-        cps.controlPoint1 = Handles.DoPositionHandle(cps.controlPoint1, Quaternion.identity);
-        cps.controlPoint2 = Handles.DoPositionHandle(cps.controlPoint2, Quaternion.identity);
+        curve1.t = t;
+        curve1.vis(gizmoSize);
     }
 }
 
@@ -80,26 +25,89 @@ public class drawLineHandle : MonoBehaviour
 public static class drawLineUtil {
 
 
-/*    void visualizePoints(float size)
-    {
-        //Point
-        Gizmos.color = Color.white;
-        Gizmos.DrawSphere(GetPos(0), size);
-        Gizmos.DrawSphere(GetPos(3), size);
-
-        //Control Handle
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawSphere(GetPos(1), size * 0.5f);
-        Gizmos.DrawSphere(GetPos(2), size * 0.5f);
-
-        //Connect Points & Handles
-        Gizmos.DrawLine(GetPos(0), GetPos(1));
-        Gizmos.DrawLine(GetPos(2), GetPos(3));
-    }*/
-
 }
 
 
+[System.Serializable]
+public class CurveSegment
+{
+    public Vector3 anchor1;
+    public Vector3 controlPoint1;
+
+    public Vector3 anchor2;
+    public Vector3 controlPoint2;
+
+    [Space(30), Header("t related")]
+    public float t;
+    public Vector3 t_pos;
+    public Quaternion t_rot;
+
+    // Constructor
+    public CurveSegment(Vector3 _anchor1, Vector3 _anchor2, Vector3 _controlPoint1, Vector3 _controlPoint2)
+    {
+        this.anchor1 = _anchor1;
+        this.controlPoint1 = _anchor2;
+
+        this.anchor2 = _controlPoint1;
+        this.controlPoint2 = _controlPoint2;
+    }
+
+    // get T point and Normal
+    void GetTPoint()
+    {
+        Vector3 a = Vector3.Lerp(anchor1, controlPoint1, t);
+        Vector3 b = Vector3.Lerp(controlPoint1, controlPoint2, t);
+        Vector3 c = Vector3.Lerp(controlPoint2, anchor2, t);
+
+        Vector3 d = Vector3.Lerp(a, b, t);
+        Vector3 e = Vector3.Lerp(b, c, t);
+
+        //Vector3 pos = Vector3.Lerp(d, e, t);
+        Vector3 tangent = (e - d).normalized;
+
+        this.t_pos = Vector3.Lerp(d, e, t);
+        this.t_rot = Quaternion.LookRotation(tangent);
+    }
+
+    // vis -> Visual Preview
+    public void vis(float gizmoSize)
+    {
+        GetTPoint();
+        vis_Gizmo_CurvePoints(gizmoSize);
+        vis_Handle_TPoint();
+        vis_handles_Bezier(gizmoSize);
+        vis_handles_DoPositionHandle();
+    }
+
+    void vis_Gizmo_CurvePoints(float gizmoSize)
+    {
+        //Anchors
+        Gizmos.color = Color.white;
+        Gizmos.DrawSphere(anchor1, gizmoSize);
+        Gizmos.DrawSphere(anchor2, gizmoSize);
+
+        //ControlPoint
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(controlPoint1, gizmoSize * 0.5f);
+        Gizmos.DrawSphere(controlPoint2, gizmoSize * 0.5f);
+
+        //Connect Points & Handles
+        Gizmos.DrawLine(anchor1, controlPoint1);
+        Gizmos.DrawLine(anchor2, controlPoint2);
+    }
+
+    void vis_Handle_TPoint() => Handles.DoPositionHandle(t_pos, t_rot);
+
+    void vis_handles_Bezier(float gizmoSize) => Handles.DrawBezier(anchor1, anchor2, controlPoint1, controlPoint2, Color.white, EditorGUIUtility.whiteTexture, gizmoSize);
+
+    void vis_handles_DoPositionHandle()
+    {
+        anchor1 = Handles.DoPositionHandle(anchor1, Quaternion.identity);
+        anchor2 = Handles.DoPositionHandle(anchor2, Quaternion.identity);
+        controlPoint1 = Handles.DoPositionHandle(controlPoint1, Quaternion.identity);
+        controlPoint2 = Handles.DoPositionHandle(controlPoint2, Quaternion.identity);
+    }
+}
 
 
 
