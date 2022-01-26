@@ -5,7 +5,7 @@ using UnityEditor;
 
 //[ExecuteAlways]
 [ExecuteInEditMode]
-public class drawLineHandle : MonoBehaviour
+public class bezierCurve : MonoBehaviour
 {
     [Range(0f,1f)] public float t = 0;
 
@@ -113,28 +113,24 @@ public class CurveSegment
 }
 
 
-
-
-
-
-    [CustomEditor(typeof(drawLineHandle))]
+    [CustomEditor(typeof(bezierCurve))]
     public class drawLineHandleEditor : Editor
     {
 
 
         protected virtual void OnSceneGUI()
         {
-            drawLineHandle handleExample = (drawLineHandle)target;
+            bezierCurve handleExample = (bezierCurve)target;
 
             if (handleExample == null) return;
 
-            Handles.color = Color.yellow;
+            //Handles.color = Color.yellow;
 
-            GUIStyle style = new GUIStyle();
-            style.normal.textColor = Color.green;
+            //GUIStyle style = new GUIStyle();
+            //style.normal.textColor = Color.green;
 
-            Vector3 position = handleExample.transform.position + Vector3.up * 2f;
-            string posString = position.ToString();
+            //Vector3 position = handleExample.transform.position + Vector3.up * 2f;
+            //string posString = position.ToString();
 
             handleExample.curve1.visEditor();
         }

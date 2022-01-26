@@ -65,8 +65,6 @@ public class Raycast : MonoBehaviour
             UISprite_renderer.enabled = true;
             UISprite.transform.position = hit.point + hit.normal * UISprite_surfaceOffset;
             UISprite.transform.eulerAngles = hitPositionNormalRotation;
-
-            if (isRandomColor) randomColor(hit.collider.name);
         }
 
         else
@@ -109,15 +107,6 @@ public class Raycast : MonoBehaviour
         //right
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + transform.right);
-    }
-
-    void randomColor (string objectName)
-    {
-        GameObject _gameObject = GameObject.Find(objectName);
-
-        if (!_gameObject) return;
-
-        _gameObject.GetComponent<Renderer>().material.color = Random.ColorHSV();
     }
 
 
