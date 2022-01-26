@@ -23,11 +23,12 @@ public class smoothLerp : MonoBehaviour
     public bool isDrawBeizerCurve = true;
 
     void Update() {
-        foreach (followerData follower in followers)
-        {
-            Vector3 targetPosition = transform.TransformPoint(follower.Offset);
 
-            follower.obj.transform.position = Vector3.SmoothDamp(follower.obj.transform.position, targetPosition, ref velocity, smoothTime);
+        for (int i = 0; i < followers.Capacity; i++)
+        {
+            Vector3 targetPosition = transform.TransformPoint(followers[i].Offset);
+
+            followers[i].obj.transform.position = Vector3.SmoothDamp(followers[i].obj.transform.position, targetPosition, ref velocity, smoothTime);
         }
     }
 

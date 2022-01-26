@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-[ExecuteAlways]
+//[ExecuteAlways]
 public class Raycast : MonoBehaviour
 {
     public bool isCasted;
+    public bool isRandomColor;
 
-    public string CastedObject;
+    public string CastedObject = "Nothing";
 
     private Vector3 hitPosition;
     private Vector3 hitPositionNormal;
     private Vector3 hitPositionNormalRotation;
     public float hitPointDistance;
+
+    public GameObject rayCastedPoint;
 
 
     [Header("DrawGizmo")]
@@ -26,9 +29,10 @@ public class Raycast : MonoBehaviour
     [Range(0f, 1f)]  public float UISprite_surfaceOffset;
     Renderer UISprite_renderer;
 
+
     private void Start()
     {
-        
+
     }
     // Update is called once per frame
     void Update()
@@ -42,7 +46,11 @@ public class Raycast : MonoBehaviour
 
         isCasted = Physics.Raycast(ray, out RaycastHit hit);
 
-        if (isCasted) {
+
+        if (isCasted)
+        {
+            if (CastedObject != hit.collider.name) Debug.Log("Enter!");
+
             CastedObject = hit.collider.name;
 
             // hit & Gizmos 
@@ -57,10 +65,16 @@ public class Raycast : MonoBehaviour
             UISprite_renderer.enabled = true;
             UISprite.transform.position = hit.point + hit.normal * UISprite_surfaceOffset;
             UISprite.transform.eulerAngles = hitPositionNormalRotation;
+
+            if (isRandomColor) randomColor(hit.collider.name);
         }
 
         else
         {
+            if (hit.collider == null) Debug.Log("Leave!");
+
+            //else if (CastedObject != hit.collider.name) Debug.Log("Leave!");
+
             CastedObject = "Nothing";
 
             UISprite_renderer.enabled = false;
@@ -96,5 +110,15 @@ public class Raycast : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + transform.right);
     }
+
+    void randomColor (string objectName)
+    {
+        GameObject _gameObject = GameObject.Find(objectName);
+
+        if (!_gameObject) return;
+
+        _gameObject.GetComponent<Renderer>().material.color = Random.ColorHSV();
+    }
+
 
 }

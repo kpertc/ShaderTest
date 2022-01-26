@@ -1,20 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class mouseRotation : MonoBehaviour
 {
-    [HideInInspector] public Vector3 rotateResult;
-    [HideInInspector] public Vector3 currentRotation;
+    Vector3 rotateResult;
+    Vector3 currentRotation;
+    Vector3 rotationOffset;
 
     public float mouseX;
     public float mouseY;
+    public bool invertY;
 
-    [Range(0,1)] public float sensitivity = 1;
+    [Range(0,1)] public float sensitivity = 0.5f;
+
+    public Vector3 initialRot;
 
     void Start()
     {
-        
+        transform.eulerAngles = initialRot;
+        rotationOffset = new Vector3(mouseY, mouseX) * sensitivity - initialRot;
     }
 
     void Update()
@@ -22,10 +25,9 @@ public class mouseRotation : MonoBehaviour
         mouseX = Input.mousePosition.x;
         mouseY = Input.mousePosition.y;
 
-        //currentRotation = transform.rotation.eulerAngles;
-        //rotateResult = currentRotation + new Vector3(mouseX, mouseY, 0);
+        if (invertY) rotateResult = new Vector3(mouseY + rotationOffset.x, -mouseX + rotationOffset.y, rotationOffset.z) * sensitivity;
 
-        rotateResult = new Vector3(mouseY, mouseX) * sensitivity;
+        else rotateResult = new Vector3(mouseY + rotationOffset.x, mouseX + rotationOffset.y, rotationOffset.z) * sensitivity;
 
         transform.eulerAngles = rotateResult;
     }
