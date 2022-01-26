@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-
+[AddComponentMenu("Common Scripts/Transform & Rotation")]
 public class transformRotation : MonoBehaviour
 {
     public Vector3 sin_Transform = new Vector3(0,0,0);

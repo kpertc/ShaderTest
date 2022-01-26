@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[AddComponentMenu("Common Scripts/Mouse Rotation")]
 public class mouseRotation : MonoBehaviour
 {
     Vector3 rotateResult;

@@ -9,9 +9,10 @@ using UnityEngine;
 public class smoothLerp : MonoBehaviour 
 {
     [System.Serializable] // For shown in inspector
-    public struct followerData {
+    public class followerData {
         public GameObject obj;
         public Vector3 Offset;
+        public float distance;
     }
 
     public List<followerData> followers;
@@ -29,6 +30,8 @@ public class smoothLerp : MonoBehaviour
             Vector3 targetPosition = transform.TransformPoint(followers[i].Offset);
 
             followers[i].obj.transform.position = Vector3.SmoothDamp(followers[i].obj.transform.position, targetPosition, ref velocity, smoothTime);
+
+            followers[i].distance = Vector3.Distance(followers[i].obj.transform.position, transform.position);
         }
     }
 
