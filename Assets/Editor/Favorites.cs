@@ -15,6 +15,10 @@ public class Favorites : EditorWindow
     public favoritesResources _favoritesResourcesConfig;
     public int toolbarInt;
 
+    //scrollPos
+    Vector2 scrollPos0;
+    Vector2 scrollPos1;
+    Vector2 scrollPos2;
 
     private void OnEnable()
     {
@@ -35,22 +39,28 @@ public class Favorites : EditorWindow
         switch (toolbarInt)
         {
             case 0:
+  
                 //Looping SceneList
                 for (int i = 0; i < _favoritesResourcesConfig.sceneList.Count; i++)
                 {
                     EditorGUILayout.Space(5);
                     //GUILayout.Label(_favoritesResourcesConfig.sceneList[i].title, EditorStyles.boldLabel);
 
+                    scrollPos0 = EditorGUILayout.BeginScrollView(scrollPos0);
                     //Looping SceneList -> SceneFiles
                     for (int j = 0; j < _favoritesResourcesConfig.sceneList[i].scenefiles.Capacity; j++)
                     {
                         GUILayout.BeginHorizontal(EditorStyles.helpBox);
                         GUILayout.Label(_favoritesResourcesConfig.sceneList[i].scenefiles[j].name);
-                        if (GUILayout.Button("Open", GUILayout.Width(100)))
+                        if (GUILayout.Button("Show", GUILayout.Width(60)))
+                            Selection.activeObject = AssetDatabase.LoadMainAssetAtPath(AssetDatabase.GetAssetPath(_favoritesResourcesConfig.sceneList[i].scenefiles[j]));
+
+                        if (GUILayout.Button("Open", GUILayout.Width(60)))
                             EditorSceneManager.OpenScene(AssetDatabase.GetAssetPath(_favoritesResourcesConfig.sceneList[i].scenefiles[j]), OpenSceneMode.Single);
 
                         GUILayout.EndHorizontal();
                     }
+                    EditorGUILayout.EndScrollView();
                 }
                 break;
 
@@ -61,6 +71,7 @@ public class Favorites : EditorWindow
                 {
                     EditorGUILayout.Space(5);
 
+                    scrollPos1 = EditorGUILayout.BeginScrollView(scrollPos1);
                     //Looping SceneList -> SceneFiles
                     for (int j = 0; j < _favoritesResourcesConfig.CSharpList[i].CSharpfiles.Capacity; j++)
                     {
@@ -75,6 +86,7 @@ public class Favorites : EditorWindow
 
                         GUILayout.EndHorizontal();
                     }
+                    EditorGUILayout.EndScrollView();
                 }
 
                 break;
@@ -85,6 +97,7 @@ public class Favorites : EditorWindow
                 {
                     EditorGUILayout.Space(5);
 
+                    scrollPos2 = EditorGUILayout.BeginScrollView(scrollPos2);
                     //Looping SceneList -> SceneFiles
                     for (int j = 0; j < _favoritesResourcesConfig.websiteList[i].websites.Capacity; j++)
                     {
@@ -96,6 +109,7 @@ public class Favorites : EditorWindow
 
                         GUILayout.EndHorizontal();
                     }
+                    EditorGUILayout.EndScrollView();
                 }
 
                 break;
