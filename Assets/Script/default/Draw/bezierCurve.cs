@@ -7,86 +7,41 @@ using UnityEditor;
 [ExecuteInEditMode]
 public class bezierCurve : MonoBehaviour
 {
-    public Transform anchor1;
-    public Transform anchor2;
-
     [Range(0f,1f)] public float t = 0;
 
-    [Header("Gizmo Display")] 
-    [Range(0f,5f)] public float gizmoSize = 1;
-    public bool isShowGizmoPoints;
-    public bool isShowGizmoTPoint;
-    public bool isShowBeizerCurve;
-    public bool isShowSampling;
+    [Header("Gizmo Size")] 
+    [Range(0f,2f)] public static float gizmoSize = 1;
 
-    public CurveSegment curve1 = new CurveSegment();
-
-    [Header("SmoothLerp")]
-    public smoothLerp smoothLerp;
-    [SerializeField] private float distance;
-
-    [Range(0f, 1f)] public float curveChange;
+    public CurveSegment curve1;
 
     private void OnDrawGizmos()
     {
         curve1.t = t;
-        //curve1.visMono(gizmoSize);
-        //curve1.sampling();
-        //curve1.vis_Gizmo_sampling();
-
-        if (isShowGizmoPoints) curve1.vis_Gizmo_CurvePoints(gizmoSize); 
-        if (isShowGizmoTPoint) curve1.vis_Handle_TPoint();
-        if (isShowBeizerCurve) curve1.vis_handles_Bezier(gizmoSize);
-        if (isShowSampling)
-        {
-            curve1.sampling();
-            curve1.vis_Gizmo_sampling(gizmoSize);
-        }
+        curve1.visMono(gizmoSize);
     }
 
-    public void Update()
-    {
-        distance = smoothLerp.followers[0].distance;
-        Vector3 movingVector = smoothLerp.followers[0].movingVector;
 
-        //update Position
-        curve1.anchor1 = anchor1.position;
-        curve1.controlPoint1 = anchor1.transform.position + new Vector3(0, 0, 0) + movingVector * distance * curveChange;
+public static class drawLineUtil {
 
-        curve1.anchor2 = anchor2.position;
-        curve1.controlPoint2 = anchor2.position + new Vector3(0, 0, 0);
 
-    }
-
-    public static class drawLineUtil
-    {
-
-    }
 }
 
 
 [System.Serializable]
 public class CurveSegment
 {
-    // Points
     public Vector3 anchor1;
     public Vector3 controlPoint1;
 
     public Vector3 anchor2;
     public Vector3 controlPoint2;
 
-    // Samples
-    [Range(1, 50)] public int sampleNum = 1;
-    private float smapleInterval;
-    public t_PosRot[] samples;
-
-    // T-Related
     [Space(30), Header("t related")]
     public float t;
+    public Vector3 t_pos;
+    public Quaternion t_rot;
 
     // Constructor
-    public CurveSegment() { }
-
     public CurveSegment(Vector3 _anchor1, Vector3 _anchor2, Vector3 _controlPoint1, Vector3 _controlPoint2)
     {
         this.anchor1 = _anchor1;
@@ -96,57 +51,27 @@ public class CurveSegment
         this.controlPoint2 = _controlPoint2;
     }
 
-    // t_PosRot dataStructure
-    [System.Serializable]
-    public struct t_PosRot
-    {
-        public Vector3 pos;
-        public Quaternion rot;
-
-        public t_PosRot (Vector3 _pos, Quaternion _rot)
-        {
-            this.pos = _pos;
-            this.rot = _rot;
-        }
-    }
-
     // get T point and Normal
-    t_PosRot GetTPoint(float _t)
+    void GetTPoint()
     {
-        Vector3 a = Vector3.Lerp(anchor1, controlPoint1, _t);
-        Vector3 b = Vector3.Lerp(controlPoint1, controlPoint2, _t);
-        Vector3 c = Vector3.Lerp(controlPoint2, anchor2, _t);
+        Vector3 a = Vector3.Lerp(anchor1, controlPoint1, t);
+        Vector3 b = Vector3.Lerp(controlPoint1, controlPoint2, t);
+        Vector3 c = Vector3.Lerp(controlPoint2, anchor2, t);
 
-        Vector3 d = Vector3.Lerp(a, b, _t);
-        Vector3 e = Vector3.Lerp(b, c, _t);
+        Vector3 d = Vector3.Lerp(a, b, t);
+        Vector3 e = Vector3.Lerp(b, c, t);
 
         //Vector3 pos = Vector3.Lerp(d, e, t);
         Vector3 tangent = (e - d).normalized;
 
-        return new t_PosRot(Vector3.Lerp(d, e, _t), Quaternion.LookRotation(tangent));
-    }
-
-    // Sampling
-    public void sampling()
-    {
-        smapleInterval = 1 / (float)sampleNum;
-        //Debug.Log(smapleInterval);
-        samples = new t_PosRot[sampleNum + 1];
-        float tempT;
-
-        for (int i = 0; i <= sampleNum; i++)
-        {
-            tempT = i * smapleInterval;
-
-            samples[i] = GetTPoint(tempT);
-
-            //Debug.Log("i: " + i.ToString() + ", tempT: " + tempT);
-        }
+        this.t_pos = Vector3.Lerp(d, e, t);
+        this.t_rot = Quaternion.LookRotation(tangent);
     }
 
     // vis -> Visual Preview
     public void visMono(float gizmoSize)
     {
+        GetTPoint();
         vis_Gizmo_CurvePoints(gizmoSize);
         vis_Handle_TPoint();
         vis_handles_Bezier(gizmoSize);
@@ -157,7 +82,7 @@ public class CurveSegment
         vis_handles_DoPositionHandle();
     }
 
-    public void vis_Gizmo_CurvePoints(float gizmoSize)
+        void vis_Gizmo_CurvePoints(float gizmoSize)
     {
         //Anchors
         Gizmos.color = Color.white;
@@ -174,20 +99,11 @@ public class CurveSegment
         Gizmos.DrawLine(anchor2, controlPoint2);
     }
 
-    public void vis_Gizmo_sampling(float gimzoSize)
-    {
-        foreach (t_PosRot sample in samples)
-        {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(sample.pos, gimzoSize);
-        }
-    }
+    void vis_Handle_TPoint() => Handles.DoPositionHandle(t_pos, t_rot);
 
-    public void vis_Handle_TPoint() => Handles.DoPositionHandle(GetTPoint(t).pos, GetTPoint(t).rot);
+    void vis_handles_Bezier(float gizmoSize) => Handles.DrawBezier(anchor1, anchor2, controlPoint1, controlPoint2, Color.white, EditorGUIUtility.whiteTexture, gizmoSize);
 
-    public void vis_handles_Bezier(float gizmoSize) => Handles.DrawBezier(anchor1, anchor2, controlPoint1, controlPoint2, Color.white, EditorGUIUtility.whiteTexture, gizmoSize * 10);
-
-    public void vis_handles_DoPositionHandle()
+    void vis_handles_DoPositionHandle()
     {
         anchor1 = Handles.DoPositionHandle(anchor1, Quaternion.identity);
         anchor2 = Handles.DoPositionHandle(anchor2, Quaternion.identity);
@@ -197,26 +113,28 @@ public class CurveSegment
 }
 
 
-[CustomEditor(typeof(bezierCurve))]
-public class drawLineHandleEditor : Editor
-{
-
-
-    protected virtual void OnSceneGUI()
+    [CustomEditor(typeof(bezierCurve))]
+    public class drawLineHandleEditor : Editor
     {
-        bezierCurve handleExample = (bezierCurve)target;
 
-        if (handleExample == null) return;
 
-        //Handles.color = Color.yellow;
+        protected virtual void OnSceneGUI()
+        {
+            bezierCurve handleExample = (bezierCurve)target;
 
-        //GUIStyle style = new GUIStyle();
-        //style.normal.textColor = Color.green;
+            if (handleExample == null) return;
 
-        //Vector3 position = handleExample.transform.position + Vector3.up * 2f;
-        //string posString = position.ToString();
+            //Handles.color = Color.yellow;
 
-        //handleExample.curve1.visEditor();
+            //GUIStyle style = new GUIStyle();
+            //style.normal.textColor = Color.green;
+
+            //Vector3 position = handleExample.transform.position + Vector3.up * 2f;
+            //string posString = position.ToString();
+
+            handleExample.curve1.visEditor();
+        }
+
     }
 
 }
