@@ -15,6 +15,7 @@ public class smoothLerp : MonoBehaviour
         public Vector3 Offset;
         public float distance;
         public bool isRot;
+        public Vector3 movingVector;
     }
 
     public List<followerData> followers;
@@ -31,6 +32,8 @@ public class smoothLerp : MonoBehaviour
         for (int i = 0; i < followers.Capacity; i++)
         {
             Vector3 targetPosition = transform.TransformPoint(followers[i].Offset);
+
+            followers[i].movingVector = transform.position - followers[i].obj.transform.position;
 
             followers[i].obj.transform.position = Vector3.SmoothDamp(followers[i].obj.transform.position, targetPosition, ref velocity, smoothTime);
 
