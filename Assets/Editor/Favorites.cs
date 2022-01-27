@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
 
 using System;
 
@@ -15,16 +16,64 @@ public class Favorites : EditorWindow
     public favoritesResources _favoritesResourcesConfig;
     public int toolbarInt;
 
+    public static int historySize = 6;
+    public sceneData[] sceneHistoryList = new sceneData[historySize];
+
     //scrollPos
     Vector2 scrollPos0;
     Vector2 scrollPos1;
     Vector2 scrollPos2;
+    Vector2 scrollPos3;
+
 
     private void OnEnable()
     {
         _favoritesResourcesConfig = (favoritesResources)AssetDatabase.LoadAssetAtPath("Assets/Script/Scriptable Assets/Favorites Resources.asset", typeof(favoritesResources));
 
+        sceneHistoryList[0] = new sceneData(SceneManager.GetActiveScene().name, SceneManager.GetActiveScene().path);
+
+        EditorSceneManager.activeSceneChangedInEditMode += sceneHistory;
+
     }
+
+    private void OnDestroy()
+    {
+        EditorSceneManager.activeSceneChangedInEditMode -= sceneHistory;
+    }
+
+    public struct sceneData
+    {
+        public string sceneName;
+        public string scenePath;
+
+        public sceneData (string _sceneName, string _scenePath)
+        {
+            this.sceneName = _sceneName;
+            this.scenePath = _scenePath;
+        }
+    }
+
+    private void sceneHistory(Scene current, Scene next)
+    {
+        bool exist = false; // expect not in
+        foreach (sceneData scene in sceneHistoryList )
+        {
+            if (scene.sceneName == SceneManager.GetActiveScene().name)
+            {
+                exist = true; // Scene has already Existed
+            }
+        }
+
+        if (!exist) // is not will add new scene
+        {
+            for (int i = historySize - 1; i > 0; i--) sceneHistoryList[i] = sceneHistoryList[i - 1];
+
+            sceneHistoryList[0] = new sceneData(SceneManager.GetActiveScene().name, SceneManager.GetActiveScene().path);
+        }
+
+        // 提前
+    }
+    
 
     private void OnGUI()
     {
@@ -39,9 +88,27 @@ public class Favorites : EditorWindow
         switch (toolbarInt)
         {
             case 0:
-  
+
+                GUILayout.Space(2);
+
+                scrollPos3 = EditorGUILayout.BeginScrollView(scrollPos3, GUILayout.Width(position.width), GUILayout.Height(40));
+
+                GUILayout.BeginHorizontal();
+
+                foreach (sceneData _scene in sceneHistoryList)
+                {
+                    if (GUILayout.Button(_scene.sceneName, GUILayout.Height(25), GUILayout.Width(100)))
+                    {
+                        EditorSceneManager.OpenScene(_scene.scenePath, OpenSceneMode.Single);
+                    }
+                }
+
+                GUILayout.EndHorizontal();
+
+                EditorGUILayout.EndScrollView();
+
                 //Looping SceneList
-                for (int i = 0; i < _favoritesResourcesConfig.sceneList.Count; i++)
+                    for (int i = 0; i < _favoritesResourcesConfig.sceneList.Count; i++)
                 {
                     EditorGUILayout.Space(5);
                     //GUILayout.Label(_favoritesResourcesConfig.sceneList[i].title, EditorStyles.boldLabel);
