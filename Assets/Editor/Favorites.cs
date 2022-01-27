@@ -12,10 +12,10 @@ public class Favorites : EditorWindow
     [MenuItem("Custom/EditorWindows/Favorites")]
     static void Init() => GetWindow<Favorites>("Favorites");
 
-
     public favoritesResources _favoritesResourcesConfig;
     public int toolbarInt;
 
+    //History Slot Size
     public static int historySize = 6;
     public sceneData[] sceneHistoryList = new sceneData[historySize];
 
@@ -36,10 +36,7 @@ public class Favorites : EditorWindow
 
     }
 
-    private void OnDestroy()
-    {
-        EditorSceneManager.activeSceneChangedInEditMode -= sceneHistory;
-    }
+    private void OnDestroy() => EditorSceneManager.activeSceneChangedInEditMode -= sceneHistory;
 
     public struct sceneData
     {
@@ -58,10 +55,7 @@ public class Favorites : EditorWindow
         bool exist = false; // expect not in
         foreach (sceneData scene in sceneHistoryList )
         {
-            if (scene.sceneName == SceneManager.GetActiveScene().name)
-            {
-                exist = true; // Scene has already Existed
-            }
+            if (scene.sceneName == SceneManager.GetActiveScene().name) exist = true; // Scene has already Existed
         }
 
         if (!exist) // is not will add new scene
@@ -83,7 +77,7 @@ public class Favorites : EditorWindow
         _favoritesResourcesConfig = (favoritesResources)EditorGUILayout.ObjectField(_favoritesResourcesConfig, typeof(favoritesResources), false);
 
         //Tabs
-        toolbarInt = GUILayout.Toolbar(toolbarInt, new string[] { "Scenes", "Scripts", "Websites" });
+        toolbarInt = GUILayout.Toolbar(toolbarInt, new string[] { "Scenes", "Scripts", "Websites", "Memo" });
 
         switch (toolbarInt)
         {
@@ -180,6 +174,12 @@ public class Favorites : EditorWindow
                 }
 
                 break;
+
+            case 3:
+
+                _favoritesResourcesConfig.notes = GUILayout.TextArea(_favoritesResourcesConfig.notes, GUILayout.Height(position.height - 63));
+
+                break;
         }
 
         var e = Event.current;
@@ -253,4 +253,6 @@ public class favoritesResources : ScriptableObject
     public List<favoritesCSharp> CSharpList = new List<favoritesCSharp>();
 
     public List<favoritesWebs> websiteList = new List<favoritesWebs>();
+
+    public string notes;
 }
