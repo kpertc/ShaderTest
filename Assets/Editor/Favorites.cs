@@ -9,15 +9,14 @@ using System;
 
 public class Favorites : EditorWindow
 {
-    [MenuItem("Custom/EditorWindows/Favorites")]
+    [MenuItem("Custom/Favorites")]
     static void Init() => GetWindow<Favorites>("Favorites");
 
     public favoritesResources _favoritesResourcesConfig;
     public int toolbarInt;
 
-    //History Slot Size
-    public static int historySize = 6;
-    public sceneData[] sceneHistoryList = new sceneData[historySize];
+    //UI Variables
+    bool foldoutState;
 
     //scrollPos
     Vector2 scrollPos0;
@@ -25,59 +24,62 @@ public class Favorites : EditorWindow
     Vector2 scrollPos2;
     Vector2 scrollPos3;
 
-
     private void OnEnable()
     {
-        _favoritesResourcesConfig = (favoritesResources)AssetDatabase.LoadAssetAtPath("Assets/Script/Scriptable Assets/Favorites Resources.asset", typeof(favoritesResources));
+        //记住应用SO from 记住
 
-        sceneHistoryList[0] = new sceneData(SceneManager.GetActiveScene().name, SceneManager.GetActiveScene().path);
+        _favoritesResourcesConfig = (favoritesResources)AssetDatabase.LoadAssetAtPath("Assets/Script/Scriptable Assets/JingfuChen_FR.asset", typeof(ScriptableObject));
+
+        _favoritesResourcesConfig.sceneHistoryList[0] = new favoritesResources.sceneData(SceneManager.GetActiveScene().name, SceneManager.GetActiveScene().path);
 
         EditorSceneManager.activeSceneChangedInEditMode += sceneHistory;
-
     }
 
-    private void OnDestroy() => EditorSceneManager.activeSceneChangedInEditMode -= sceneHistory;
-
-    public struct sceneData
+    private void OnDestroy()
     {
-        public string sceneName;
-        public string scenePath;
+        EditorSceneManager.activeSceneChangedInEditMode -= sceneHistory;
 
-        public sceneData (string _sceneName, string _scenePath)
-        {
-            this.sceneName = _sceneName;
-            this.scenePath = _scenePath;
-        }
+        //记住SO
     }
 
     private void sceneHistory(Scene current, Scene next)
     {
         bool exist = false; // expect not in
-        foreach (sceneData scene in sceneHistoryList )
+        foreach (favoritesResources.sceneData scene in _favoritesResourcesConfig.sceneHistoryList)
         {
             if (scene.sceneName == SceneManager.GetActiveScene().name) exist = true; // Scene has already Existed
         }
 
         if (!exist) // is not will add new scene
         {
-            for (int i = historySize - 1; i > 0; i--) sceneHistoryList[i] = sceneHistoryList[i - 1];
+            for (int i = _favoritesResourcesConfig.sceneHistoryList.Length - 1; i > 0; i--) _favoritesResourcesConfig.sceneHistoryList[i] = _favoritesResourcesConfig.sceneHistoryList[i - 1];
 
-            sceneHistoryList[0] = new sceneData(SceneManager.GetActiveScene().name, SceneManager.GetActiveScene().path);
+            _favoritesResourcesConfig.sceneHistoryList[0] = new favoritesResources.sceneData(SceneManager.GetActiveScene().name, SceneManager.GetActiveScene().path);
         }
 
         // 提前
     }
     
-
     private void OnGUI()
     {
 
-        GUILayout.Label("Config Profile", EditorStyles.boldLabel);
+        foldoutState = EditorGUILayout.Foldout(foldoutState, "Configs"); // 折叠菜单状态
+        if (foldoutState)
+        {
+            EditorGUI.indentLevel++; // indentlevel only work for Editor Elements
 
-        _favoritesResourcesConfig = (favoritesResources)EditorGUILayout.ObjectField(_favoritesResourcesConfig, typeof(favoritesResources), false);
+            EditorGUILayout.LabelField("Config File: ", EditorStyles.boldLabel);
+
+            _favoritesResourcesConfig = (favoritesResources)EditorGUILayout.ObjectField(_favoritesResourcesConfig, typeof(ScriptableObject), false);
+
+            EditorGUILayout.Space(10);
+
+            EditorGUI.indentLevel--;
+        }
+
 
         //Tabs
-        toolbarInt = GUILayout.Toolbar(toolbarInt, new string[] { "Scenes", "Scripts", "Websites", "Memo" });
+        toolbarInt = GUILayout.Toolbar(toolbarInt, new string[] { "Scenes", "Scripts", "Websites", "Memo" }, GUILayout.Height(30));
 
         switch (toolbarInt)
         {
@@ -85,11 +87,12 @@ public class Favorites : EditorWindow
 
                 GUILayout.Space(2);
 
+                //Scene History Part
                 scrollPos3 = EditorGUILayout.BeginScrollView(scrollPos3, GUILayout.Width(position.width), GUILayout.Height(40));
 
                 GUILayout.BeginHorizontal();
 
-                foreach (sceneData _scene in sceneHistoryList)
+                foreach (favoritesResources.sceneData _scene in _favoritesResourcesConfig.sceneHistoryList)
                 {
                     if (GUILayout.Button(_scene.sceneName, GUILayout.Height(25), GUILayout.Width(100)))
                     {
@@ -101,13 +104,16 @@ public class Favorites : EditorWindow
 
                 EditorGUILayout.EndScrollView();
 
-                //Looping SceneList
-                    for (int i = 0; i < _favoritesResourcesConfig.sceneList.Count; i++)
+
+                //Favorite Scene Part
+                scrollPos0 = EditorGUILayout.BeginScrollView(scrollPos0);
+
+                for (int i = 0; i < _favoritesResourcesConfig.sceneList.Count; i++)
                 {
                     EditorGUILayout.Space(5);
-                    //GUILayout.Label(_favoritesResourcesConfig.sceneList[i].title, EditorStyles.boldLabel);
 
-                    scrollPos0 = EditorGUILayout.BeginScrollView(scrollPos0);
+                    GUILayout.Label(_favoritesResourcesConfig.sceneList[i].title, EditorStyles.boldLabel);
+
                     //Looping SceneList -> SceneFiles
                     for (int j = 0; j < _favoritesResourcesConfig.sceneList[i].scenefiles.Capacity; j++)
                     {
@@ -121,19 +127,22 @@ public class Favorites : EditorWindow
 
                         GUILayout.EndHorizontal();
                     }
-                    EditorGUILayout.EndScrollView();
                 }
+
+                EditorGUILayout.EndScrollView();
                 break;
 
             case 1:
+
+                scrollPos1 = EditorGUILayout.BeginScrollView(scrollPos1);
 
                 //Looping SriptList
                 for (int i = 0; i < _favoritesResourcesConfig.CSharpList.Count; i++)
                 {
                     EditorGUILayout.Space(5);
 
-                    scrollPos1 = EditorGUILayout.BeginScrollView(scrollPos1);
-                    //Looping SceneList -> SceneFiles
+                    GUILayout.Label(_favoritesResourcesConfig.CSharpList[i].title, EditorStyles.boldLabel);
+
                     for (int j = 0; j < _favoritesResourcesConfig.CSharpList[i].CSharpfiles.Capacity; j++)
                     {
                         GUILayout.BeginHorizontal(EditorStyles.helpBox);
@@ -147,31 +156,36 @@ public class Favorites : EditorWindow
 
                         GUILayout.EndHorizontal();
                     }
-                    EditorGUILayout.EndScrollView();
+
                 }
+
+                EditorGUILayout.EndScrollView();
 
                 break;
 
             case 2:
 
+                scrollPos2 = EditorGUILayout.BeginScrollView(scrollPos2);
+
                 for (int i = 0; i < _favoritesResourcesConfig.websiteList.Count; i++)
                 {
                     EditorGUILayout.Space(5);
 
-                    scrollPos2 = EditorGUILayout.BeginScrollView(scrollPos2);
-                    //Looping SceneList -> SceneFiles
+                    GUILayout.Label(_favoritesResourcesConfig.websiteList[i].title, EditorStyles.boldLabel);
+
                     for (int j = 0; j < _favoritesResourcesConfig.websiteList[i].websites.Capacity; j++)
                     {
                         GUILayout.BeginHorizontal(EditorStyles.helpBox);
                         GUILayout.Label(_favoritesResourcesConfig.websiteList[i].websites[j].shortName);
 
                         if (GUILayout.Button("Open", GUILayout.Width(60)))
-                            Application.OpenURL(_favoritesResourcesConfig.websiteList[i].websites[j].urls);
+                            Application.OpenURL(_favoritesResourcesConfig.websiteList[i].websites[j].address);
 
                         GUILayout.EndHorizontal();
                     }
-                    EditorGUILayout.EndScrollView();
                 }
+
+                EditorGUILayout.EndScrollView();
 
                 break;
 
@@ -203,7 +217,7 @@ public class Favorites : EditorWindow
 
                         case KeyCode.RightArrow:
 
-                            if (toolbarInt < 2)
+                            if (toolbarInt < 3)
                             {
                                 toolbarInt += 1;
                                 //Debug.Log("Current: " + toolbarInt + " Next Page");
@@ -211,48 +225,8 @@ public class Favorites : EditorWindow
                             }
                             break;
                     }
-                break;
+                    break;
             }
         }
     }
-}
-
-[CreateAssetMenu]
-public class favoritesResources : ScriptableObject
-{
-    [Serializable]
-    public class favoritesScenes
-    {
-        public string title;
-        public List<SceneAsset> scenefiles;
-    }
-
-    [Serializable]
-    public class favoritesCSharp
-    {
-        public string title;
-        public List<MonoScript> CSharpfiles;
-    }
-
-    [Serializable]
-    public class favoritesWebs
-    {
-        public string title;
-        public List<website> websites;
-    }
-
-    [Serializable]
-    public class website
-    {
-        public string shortName;
-        public string urls;
-    }
-
-    public List<favoritesScenes> sceneList = new List<favoritesScenes>();
-
-    public List<favoritesCSharp> CSharpList = new List<favoritesCSharp>();
-
-    public List<favoritesWebs> websiteList = new List<favoritesWebs>();
-
-    public string notes;
 }

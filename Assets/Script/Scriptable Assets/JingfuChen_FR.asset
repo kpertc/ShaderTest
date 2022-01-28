@@ -1,0 +1,103 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1614d3bd0b8cac14e99e18cc7ee2709a, type: 3}
+  m_Name: JingfuChen_FR
+  m_EditorClassIdentifier: 
+  sceneHistoryList:
+  - sceneName: Transparent UI Test
+    scenePath: Assets/Scenes/Transparent UI Test.unity
+  - sceneName: Scriptables
+    scenePath: Assets/Scenes/Scriptables.unity
+  - sceneName: "b\xE9zierCurve"
+    scenePath: "Assets/Scenes/Tools/b\xE9zierCurve.unity"
+  - sceneName: RayCast
+    scenePath: Assets/Scenes/Tools/RayCast.unity
+  sceneList:
+  - title: G
+    scenefiles:
+    - {fileID: 102900000, guid: ccdd56a84567f9d4bb261fef0901bbef, type: 3}
+    - {fileID: 102900000, guid: 426057896e0b64b92be1e5b8229b7397, type: 3}
+  CSharpList:
+  - title: Runtime
+    CSharpfiles:
+    - {fileID: 11500000, guid: 4df985dfec6dc4c67b1e415c444d90b9, type: 3}
+    - {fileID: 11500000, guid: 7e059442118524c49896adb06dcb9f19, type: 3}
+  - title: EditorWindow
+    CSharpfiles:
+    - {fileID: 11500000, guid: 111952b782ea84c6f8f04ed55fe5dd23, type: 3}
+  websiteList:
+  - title: "\u6280\u672F"
+    websites:
+    - shortName: C#
+      address: https://bytedance.feishu.cn/docs/doccnEZ5kKr2RGblB3mmnT5Vl3c
+    - shortName: Unity Tool
+      address: https://bytedance.feishu.cn/docx/doxcndejxg5SOoqTBnSU2V8wJhg
+  - title: "\u5DE5\u4F5C"
+    websites:
+    - shortName: "Pico \u5DE5\u4F5C\u8FDB\u5C55"
+      address: https://bytedance.feishu.cn/docx/doxcnFM0cXLllPVY9lZfoPGUHVc
+    - shortName: "\u4EA4\u4E92\u80FD\u529B"
+      address: https://bytedance.feishu.cn/docx/doxcnO8fkjK0lORCH1ebKCePOWe
+  notes: 'Event Trigger Test
+
+
+    1 favoirite folder
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'

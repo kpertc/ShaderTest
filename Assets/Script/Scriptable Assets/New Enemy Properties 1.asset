@@ -10,16 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3c840dea6d587e94ab18713f96efa999, type: 3}
-  m_Name: New Enemy Properties
+  m_Name: New Enemy Properties 1
   m_EditorClassIdentifier: 
   intExample: 0
   floatExample: 0
-  colorExample: {r: 1, g: 0.08962262, b: 0.53333336, a: 0.8352941}
-  stringArrayExmple:
-  - 
-  - 
-  - 
-  stringListExample:
-  - 
-  - 
-  - 
+  colorExample: {r: 0, g: 0, b: 0, a: 0}
+  stringArrayExmple: []
+  stringListExample: []
