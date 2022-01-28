@@ -13,24 +13,26 @@ MonoBehaviour:
   m_Name: JingfuChen_FR
   m_EditorClassIdentifier: 
   sceneHistoryList:
-  - sceneName: Transparent UI Test
-    scenePath: Assets/Scenes/Transparent UI Test.unity
+  - sceneName: Animation Test
+    scenePath: Assets/Scenes/Animation Test.unity
+  - sceneName: Event Trigger Test
+    scenePath: Assets/Scenes/Tools/Event Trigger Test.unity
   - sceneName: Scriptables
     scenePath: Assets/Scenes/Scriptables.unity
   - sceneName: "b\xE9zierCurve"
     scenePath: "Assets/Scenes/Tools/b\xE9zierCurve.unity"
-  - sceneName: RayCast
-    scenePath: Assets/Scenes/Tools/RayCast.unity
   sceneList:
   - title: G
     scenefiles:
     - {fileID: 102900000, guid: ccdd56a84567f9d4bb261fef0901bbef, type: 3}
     - {fileID: 102900000, guid: 426057896e0b64b92be1e5b8229b7397, type: 3}
+    - {fileID: 102900000, guid: cd2b419ec8144a14382dc2dc1289ae3f, type: 3}
   CSharpList:
   - title: Runtime
     CSharpfiles:
     - {fileID: 11500000, guid: 4df985dfec6dc4c67b1e415c444d90b9, type: 3}
     - {fileID: 11500000, guid: 7e059442118524c49896adb06dcb9f19, type: 3}
+    - {fileID: 11500000, guid: de3ba31b1e494467d8298ba86909ac68, type: 3}
   - title: EditorWindow
     CSharpfiles:
     - {fileID: 11500000, guid: 111952b782ea84c6f8f04ed55fe5dd23, type: 3}
@@ -54,6 +56,7 @@ MonoBehaviour:
 
 
 
+    hjghjghhjgj
 
 
 

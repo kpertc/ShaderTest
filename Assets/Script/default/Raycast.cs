@@ -10,6 +10,7 @@ public class Raycast : MonoBehaviour
     public bool isRandomColor;
 
     public string CastedObject = "Nothing";
+    public GameObject castedGameObject;
 
     private Vector3 hitPosition;
     private Vector3 hitPositionNormal;
@@ -40,18 +41,18 @@ public class Raycast : MonoBehaviour
         // inits
         UISprite_renderer = UISprite.GetComponent<Renderer>();
 
-
         // Updates
         Ray ray = new Ray(transform.position, transform.forward);
 
         isCasted = Physics.Raycast(ray, out RaycastHit hit);
-
 
         if (isCasted)
         {
             if (CastedObject != hit.collider.name) Debug.Log("Enter!");
 
             CastedObject = hit.collider.name;
+
+            castedGameObject = GameObject.Find(CastedObject);
 
             // hit & Gizmos 
             hitPosition = hit.point;
@@ -69,11 +70,13 @@ public class Raycast : MonoBehaviour
 
         else
         {
-            if (hit.collider == null) Debug.Log("Leave!");
+            //if (hit.collider == null) Debug.Log("Leave!");
 
             //else if (CastedObject != hit.collider.name) Debug.Log("Leave!");
 
             CastedObject = "Nothing";
+
+            castedGameObject = null;
 
             UISprite_renderer.enabled = false;
         }
