@@ -40,10 +40,6 @@ public class Raycast : MonoBehaviour
     public event Action<string> onRayCasting;
     public event Action<string> onRayCastLeave;
 
-    //public bool hasCasted;
-
-    //public delegate void raycasting (GameObject CastedObj);
-
     private void OnEnable()
     {
         onRayCastEnter += (objName) => Debug.Log("Enter: " + objName);
@@ -74,14 +70,6 @@ public class Raycast : MonoBehaviour
             //still casting, but changed Object
             if (CastedObject != hit.collider.name)
             {
-                //Leave
-                /*
-                if (CastedObject != "Nothing")
-                {
-                    if (onRayCastLeave != null) onRayCastLeave(lastCastedObject);
-                }
-                */
-                //Enter
                 if (onRayCastEnter != null) onRayCastEnter(CastedObject);
             }
 
