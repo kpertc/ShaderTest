@@ -2,10 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using System;
 
 //[ExecuteAlways]
 public class Raycast : MonoBehaviour
 {
+    /*
+    //Singleton Method
+    public static Raycast current;
+
+    public void Awake() => current = this; 
+    */
+
     public bool isCasted;
     public bool isRandomColor;
 
@@ -30,11 +38,25 @@ public class Raycast : MonoBehaviour
     [Range(0f, 1f)]  public float UISprite_surfaceOffset;
     Renderer UISprite_renderer;
 
+    //For RayCasting Event
+    private bool isRayCasting;
 
-    private void Start()
+    public event Action onRayCastEnter;
+    public event Action onRayCasting;
+    public event Action onRayCastLeave;
+
+    private void OnEnable()
     {
-
+        onRayCastEnter += () => Debug.Log("Enter");
+        onRayCasting += () => Debug.Log("on");
+        onRayCastLeave += () => Debug.Log("Leave");
     }
+
+    private void OnDestroy()
+    {
+       
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -48,7 +70,17 @@ public class Raycast : MonoBehaviour
 
         if (isCasted)
         {
-            if (CastedObject != hit.collider.name) Debug.Log("Enter!");
+            // OnRayCastEnter
+            if (!isRayCasting)
+            {
+                isRayCasting = true;
+
+                if (onRayCastEnter != null) onRayCastEnter();
+            }
+
+            // OnRayCasting
+            if (onRayCasting != null) onRayCasting();
+            //Debug.Log("OnRayCasting");
 
             CastedObject = hit.collider.name;
 
@@ -70,9 +102,12 @@ public class Raycast : MonoBehaviour
 
         else
         {
-            //if (hit.collider == null) Debug.Log("Leave!");
-
-            //else if (CastedObject != hit.collider.name) Debug.Log("Leave!");
+            //OnRayCastLeave
+            if (isRayCasting)
+            {
+                isRayCasting = false;
+                if (onRayCastLeave != null) onRayCastLeave();
+            }
 
             CastedObject = "Nothing";
 

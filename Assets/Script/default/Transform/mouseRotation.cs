@@ -26,9 +26,9 @@ public class mouseRotation : MonoBehaviour
         mouseX = Input.mousePosition.x;
         mouseY = Input.mousePosition.y;
 
-        if (invertY) rotateResult = new Vector3(mouseY + rotationOffset.x, -mouseX + rotationOffset.y, rotationOffset.z) * sensitivity;
+        if (invertY) rotateResult = new Vector3(mouseY + rotationOffset.x, mouseX + rotationOffset.y, rotationOffset.z) * sensitivity;
 
-        else rotateResult = new Vector3(mouseY + rotationOffset.x, mouseX + rotationOffset.y, rotationOffset.z) * sensitivity;
+        else rotateResult = new Vector3(-mouseY + rotationOffset.x, mouseX + rotationOffset.y, rotationOffset.z) * sensitivity;
 
         transform.eulerAngles = rotateResult;
     }

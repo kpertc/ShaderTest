@@ -21,6 +21,6 @@ public class animationControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _animator.pla
+        //_animator.pla
     }
 }
