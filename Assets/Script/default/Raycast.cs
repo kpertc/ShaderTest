@@ -7,18 +7,13 @@ using System;
 //[ExecuteAlways]
 public class Raycast : MonoBehaviour
 {
-    /*
-    //Singleton Method
-    public static Raycast current;
-
-    public void Awake() => current = this; 
-    */
-
     public bool isCasted;
     public bool isRandomColor;
 
     public string CastedObject = "Nothing";
+    private string CastedObjectDelay;
     public GameObject castedGameObject;
+    public string lastCastedObject;
 
     private Vector3 hitPosition;
     private Vector3 hitPositionNormal;
@@ -39,22 +34,26 @@ public class Raycast : MonoBehaviour
     Renderer UISprite_renderer;
 
     //For RayCasting Event
-    private bool isRayCasting;
+    private bool isRayCasting = false;
 
-    public event Action onRayCastEnter;
-    public event Action onRayCasting;
-    public event Action onRayCastLeave;
+    public event Action<string> onRayCastEnter;
+    public event Action<string> onRayCasting;
+    public event Action<string> onRayCastLeave;
+
+    //public bool hasCasted;
+
+    //public delegate void raycasting (GameObject CastedObj);
 
     private void OnEnable()
     {
-        onRayCastEnter += () => Debug.Log("Enter");
-        onRayCasting += () => Debug.Log("on");
-        onRayCastLeave += () => Debug.Log("Leave");
+        onRayCastEnter += (objName) => Debug.Log("Enter: " + objName);
+        //onRayCasting += (objName) => Debug.Log("On: " + objName);
+        onRayCastLeave += (objName) => Debug.Log("Leave: " + objName);
     }
 
     private void OnDestroy()
     {
-       
+
     }
 
     // Update is called once per frame
@@ -67,24 +66,37 @@ public class Raycast : MonoBehaviour
         Ray ray = new Ray(transform.position, transform.forward);
 
         isCasted = Physics.Raycast(ray, out RaycastHit hit);
-
+        
         if (isCasted)
         {
-            // OnRayCastEnter
-            if (!isRayCasting)
-            {
-                isRayCasting = true;
+            castedGameObject = hit.collider.gameObject;
 
-                if (onRayCastEnter != null) onRayCastEnter();
+            //still casting, but changed Object
+            if (CastedObject != hit.collider.name)
+            {
+                //Leave
+                /*
+                if (CastedObject != "Nothing")
+                {
+                    if (onRayCastLeave != null) onRayCastLeave(lastCastedObject);
+                }
+                */
+                //Enter
+                if (onRayCastEnter != null) onRayCastEnter(CastedObject);
             }
 
-            // OnRayCasting
-            if (onRayCasting != null) onRayCasting();
-            //Debug.Log("OnRayCasting");
+            // OnRayCastEnter
+            else if (!isRayCasting && CastedObject == "Nothing") 
+            {
+                if (isRayCasting = true && onRayCastEnter != null) onRayCastEnter(hit.collider.name);
+            }
 
             CastedObject = hit.collider.name;
+            castedObjectRecord ();
 
-            castedGameObject = GameObject.Find(CastedObject);
+            // OnRayCasting
+            if (onRayCasting != null) onRayCasting(CastedObject);
+            //Debug.Log("OnRayCasting");
 
             // hit & Gizmos 
             hitPosition = hit.point;
@@ -102,19 +114,37 @@ public class Raycast : MonoBehaviour
 
         else
         {
+            castedGameObject = null;
+
             //OnRayCastLeave
+            /*
             if (isRayCasting)
             {
                 isRayCasting = false;
-                if (onRayCastLeave != null) onRayCastLeave();
+
+                if (onRayCastLeave != null) onRayCastLeave(CastedObjectDelay);
             }
+            */
 
             CastedObject = "Nothing";
-
-            castedGameObject = null;
+            castedObjectRecord ();
+            
 
             UISprite_renderer.enabled = false;
         }
+    }
+
+    void castedObjectRecord ()
+    {
+        // CastedObject Changed
+        if (CastedObject != CastedObjectDelay)      
+        {
+            lastCastedObject = CastedObjectDelay;
+
+            if (onRayCastLeave != null) onRayCastLeave(CastedObjectDelay);
+        }
+
+        CastedObjectDelay = CastedObject;
     }
 
     void OnDrawGizmos()
