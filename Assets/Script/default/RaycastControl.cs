@@ -93,6 +93,7 @@ public class RaycastControl : MonoBehaviour
             //check object to trigger enter&leave event
             castedObjectRecord();
         }
+
         visualControl(isCasted);
     }
 
