@@ -5,46 +5,46 @@ using UnityEditor;
 using System;
 
 //[ExecuteAlways]
-public class Raycast : MonoBehaviour
+public class RaycastControl : MonoBehaviour
 {
+    [Header("Raycast Parameters")]
     public bool isCasted;
-    public bool isRandomColor;
-
     public string CastedObject = "Nothing";
-    private string CastedObjectDelay;
-    public GameObject castedGameObject;
     public string lastCastedObject;
 
-    private Vector3 hitPosition;
-    private Vector3 hitPositionNormal;
-    private Vector3 hitPositionNormalRotation;
-    public float hitPointDistance;
+    [Space(10)]
+    private string CastedObjectDelay;
+    private GameObject castedGameObject;
 
-    public GameObject rayCastedPoint;
+    [HideInInspector] public Vector3 hitPosition;
+    [HideInInspector] public Vector3 hitPositionNormal;
+    [HideInInspector] public Vector3 hitPositionNormalRotation;
+    [HideInInspector] public float hitPointDistance;
 
+    [Header("Position")]
+    public GameObject directPos;
+    public GameObject smoothPos;
+    [Range(0f, 1f)] public float directPos_surfaceNormalOffset;
 
-    [Header("DrawGizmo")]
+    [Header("Visual_Gizmo Toggles")]
     public bool isDrawSeldDir;
     public bool isDrawHitGizmo;
     public bool isDrawHitNormal;
 
-    [Header("UI_Sprite")]
-    public GameObject UISprite;
-    [Range(0f, 1f)]  public float UISprite_surfaceOffset;
-    Renderer UISprite_renderer;
+    [Space(5)]
+    public bool showdirectPosMesh;
+    public bool showSmoothPosMesh;
 
-    //For RayCasting Event
-    private bool isRayCasting = false;
-
+    //Events
     public event Action<string> onRayCastEnter;
     public event Action<string> onRayCasting;
     public event Action<string> onRayCastLeave;
 
     private void OnEnable()
     {
-        onRayCastEnter += (objName) => Debug.Log("Enter: " + objName);
+        //onRayCastEnter += (objName) => Debug.Log("Enter: " + objName);
         //onRayCasting += (objName) => Debug.Log("On: " + objName);
-        onRayCastLeave += (objName) => Debug.Log("Leave: " + objName);
+        //onRayCastLeave += (objName) => Debug.Log("Leave: " + objName);
     }
 
     private void OnDestroy()
@@ -55,9 +55,6 @@ public class Raycast : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // inits
-        UISprite_renderer = UISprite.GetComponent<Renderer>();
-
         // Updates
         Ray ray = new Ray(transform.position, transform.forward);
 
@@ -65,26 +62,15 @@ public class Raycast : MonoBehaviour
         
         if (isCasted)
         {
+            //update objects
             castedGameObject = hit.collider.gameObject;
-
-            //still casting, but changed Object
-            if (CastedObject != hit.collider.name)
-            {
-                if (onRayCastEnter != null) onRayCastEnter(CastedObject);
-            }
-
-            // OnRayCastEnter
-            else if (!isRayCasting && CastedObject == "Nothing") 
-            {
-                if (isRayCasting = true && onRayCastEnter != null) onRayCastEnter(hit.collider.name);
-            }
-
-            CastedObject = hit.collider.name;
+            CastedObject = castedGameObject.name;
+            
+            //check object to trigger enter&leave event
             castedObjectRecord ();
 
             // OnRayCasting
             if (onRayCasting != null) onRayCasting(CastedObject);
-            //Debug.Log("OnRayCasting");
 
             // hit & Gizmos 
             hitPosition = hit.point;
@@ -94,32 +80,20 @@ public class Raycast : MonoBehaviour
             // Distance
             hitPointDistance = Vector3.Distance(transform.position, hitPosition);
 
-            // UISprite
-            UISprite_renderer.enabled = true;
-            UISprite.transform.position = hit.point + hit.normal * UISprite_surfaceOffset;
-            UISprite.transform.eulerAngles = hitPositionNormalRotation;
+            // directPos Normal Offset
+            directPos.transform.position = hit.point + hit.normal * directPos_surfaceNormalOffset;
         }
 
         else
         {
+            //update objects
             castedGameObject = null;
-
-            //OnRayCastLeave
-            /*
-            if (isRayCasting)
-            {
-                isRayCasting = false;
-
-                if (onRayCastLeave != null) onRayCastLeave(CastedObjectDelay);
-            }
-            */
-
             CastedObject = "Nothing";
-            castedObjectRecord ();
-            
 
-            UISprite_renderer.enabled = false;
+            //check object to trigger enter&leave event
+            castedObjectRecord();
         }
+        visualControl(isCasted);
     }
 
     void castedObjectRecord ()
@@ -129,10 +103,24 @@ public class Raycast : MonoBehaviour
         {
             lastCastedObject = CastedObjectDelay;
 
+            //Trigger Leave
             if (onRayCastLeave != null) onRayCastLeave(CastedObjectDelay);
+
+            //Trigger Enter
+            if (onRayCastEnter != null)
+
+                if (isCasted) onRayCastEnter(CastedObject);
+
+                else onRayCastEnter("Nothing");
         }
 
         CastedObjectDelay = CastedObject;
+    }
+
+    void visualControl (bool isCasted)
+    {
+        if(showdirectPosMesh) directPos.GetComponent<Renderer>().enabled = isCasted;
+        if(showSmoothPosMesh) smoothPos.GetComponent<Renderer>().enabled = isCasted;
     }
 
     void OnDrawGizmos()
@@ -164,6 +152,4 @@ public class Raycast : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + transform.right);
     }
-
-
 }
