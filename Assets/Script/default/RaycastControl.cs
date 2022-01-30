@@ -10,10 +10,10 @@ public class RaycastControl : MonoBehaviour
     [Header("Raycast Parameters")]
     public bool isCasted;
     public string CastedObject = "Nothing";
-    public string lastCastedObject;
+    public GameObject lastCastedObject;
 
     [Space(10)]
-    private string CastedObjectDelay;
+    private GameObject CastedObjectDelay;
     private GameObject castedGameObject;
 
     [HideInInspector] public Vector3 hitPosition;
@@ -36,9 +36,9 @@ public class RaycastControl : MonoBehaviour
     public bool showSmoothPosMesh;
 
     //Events
-    public event Action<string> onRayCastEnter;
-    public event Action<string> onRayCasting;
-    public event Action<string> onRayCastLeave;
+    public event Action<GameObject> onRayCastEnter;
+    public event Action<GameObject> onRayCasting;
+    public event Action<GameObject> onRayCastLeave;
 
     private void OnEnable()
     {
@@ -70,7 +70,7 @@ public class RaycastControl : MonoBehaviour
             castedObjectRecord ();
 
             // OnRayCasting
-            if (onRayCasting != null) onRayCasting(CastedObject);
+            if (onRayCasting != null) onRayCasting(hit.collider.gameObject);
 
             // hit & Gizmos 
             hitPosition = hit.point;
@@ -99,7 +99,7 @@ public class RaycastControl : MonoBehaviour
     void castedObjectRecord ()
     {
         // CastedObject Changed
-        if (CastedObject != CastedObjectDelay)      
+        if (castedGameObject != CastedObjectDelay)      
         {
             lastCastedObject = CastedObjectDelay;
 
@@ -109,12 +109,12 @@ public class RaycastControl : MonoBehaviour
             //Trigger Enter
             if (onRayCastEnter != null)
 
-                if (isCasted) onRayCastEnter(CastedObject);
+                if (isCasted) onRayCastEnter(castedGameObject);
 
-                else onRayCastEnter("Nothing");
+                else onRayCastEnter(null);
         }
 
-        CastedObjectDelay = CastedObject;
+        CastedObjectDelay = castedGameObject;
     }
 
     void visualControl (bool isCasted)
