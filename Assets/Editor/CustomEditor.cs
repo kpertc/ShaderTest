@@ -72,7 +72,14 @@ public class CustomEditor : EditorWindow
                 GUILayout.Button("miniButtonMid", EditorStyles.miniButtonMid);
                 GUILayout.Button("miniButtonRight", EditorStyles.miniButtonRight);
                 EditorGUILayout.EndHorizontal();
-            
+
+                //Image Buttons
+                if (GUILayout.Button(Resources.Load<Texture>("TEST"),
+                    GUILayout.Width(64), GUILayout.Height(64)))
+                {
+                    Debug.Log("image button");
+                }
+
                 //PrefixLabel
                 EditorGUILayout.LabelField("PrefixLabel");
                 int ammo = 10;
