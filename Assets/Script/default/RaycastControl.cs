@@ -1,16 +1,20 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEditor;
-using System;
+
+using DG.Tweening;
+
 
 //[ExecuteAlways]
 public class RaycastControl : MonoBehaviour
 {
-    [Header("Raycast Parameters")]
-    public bool isCasted;
-    public string CastedObject = "Nothing";
-    public GameObject lastCastedObject;
+    [Header("Raycast Parameters (ReadOnly)")]
+    [ReadOnly] public bool isCasted;
+    [ReadOnly] public string CastedObject = "Nothing";
+    [ReadOnly] public GameObject lastCastedObject;
 
     [Space(10)]
     private GameObject CastedObjectDelay;
@@ -21,7 +25,7 @@ public class RaycastControl : MonoBehaviour
     [HideInInspector] public Vector3 hitPositionNormalRotation;
     [HideInInspector] public float hitPointDistance;
 
-    [Header("Position")]
+    [Header("Position Settings")]
     public GameObject directPos;
     public GameObject smoothPos;
     [Range(0f, 1f)] public float directPos_surfaceNormalOffset;
@@ -40,13 +44,26 @@ public class RaycastControl : MonoBehaviour
     public event Action<GameObject> onRayCasting;
     public event Action<GameObject> onRayCastLeave;
 
-    private void OnEnable()
+    void onEnterAnimation (GameObject obj)
     {
-        //onRayCastEnter += (objName) => Debug.Log("Enter: " + objName);
-        //onRayCasting += (objName) => Debug.Log("On: " + objName);
-        //onRayCastLeave += (objName) => Debug.Log("Leave: " + objName);
+        obj.transform.DOLocalMoveX(0.5f, .2f).SetEase(Ease.InOutSine);
+        obj.transform.DOScale(new Vector3(0.1f, 4 * 1.1f, 3 * 1.1f), .2f).SetEase(Ease.OutSine);
+        obj.transform.DOScale(new Vector3(0.1f, 4 * 1.05f, 3 * 1.05f), .2f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
     }
 
+    void onLeaveAnimation (GameObject obj)
+    {
+        obj.transform.DOKill(); // Stop the hover loop
+        obj.transform.DOLocalMoveX(0, .2f).SetEase(Ease.InOutSine);
+        obj.transform.DOScale(new Vector3(0.1f, 4, 3), .2f).SetEase(Ease.OutSine);
+    }
+
+    private void OnEnable()
+    {
+        onRayCastEnter += (objName) => { if (objName != null && objName.layer == 5) onEnterAnimation(objName); };
+        onRayCasting += (objName) => {};
+        onRayCastLeave += (objName) => { if (objName != null && objName.layer == 5) onLeaveAnimation(objName); };
+    }
     private void OnDestroy()
     {
 
@@ -152,5 +169,32 @@ public class RaycastControl : MonoBehaviour
         //right
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + transform.right);
+    }
+}
+
+
+
+// ----------------------[ReadOnly]Drawer-------------------------------------
+public class ReadOnlyAttribute : PropertyAttribute
+{
+
+}
+
+[CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
+public class ReadOnlyDrawer : PropertyDrawer
+{
+    public override float GetPropertyHeight(SerializedProperty property,
+                                            GUIContent label)
+    {
+        return EditorGUI.GetPropertyHeight(property, label, true);
+    }
+
+    public override void OnGUI(Rect position,
+                               SerializedProperty property,
+                               GUIContent label)
+    {
+        GUI.enabled = false;
+        EditorGUI.PropertyField(position, property, label, true);
+        GUI.enabled = true;
     }
 }
