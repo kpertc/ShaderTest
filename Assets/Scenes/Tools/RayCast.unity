@@ -200,6 +200,8 @@ MonoBehaviour:
   anchor1: {fileID: 1136936599}
   anchor2: {fileID: 935450633}
   t: 0
+  FrontBackWeight: 1
+  curveStiffness: 0.1
   gizmoSize: 0.1
   isShowGizmoPoints: 1
   isShowGizmoTPoint: 0
@@ -267,7 +269,6 @@ MonoBehaviour:
     t: 0
   smoothLerp: {fileID: 1429373405}
   distance: 0
-  curveChange: 0.1
 --- !u!4 &408394657
 Transform:
   m_ObjectHideFlags: 0

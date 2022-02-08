@@ -12,6 +12,11 @@ public class bezierCurve : MonoBehaviour
 
     [Range(0f,1f)] public float t = 0;
 
+    [Space(20)]
+    [Header("Curve Settings 曲线调节")]
+    [Range(0f, 1f), Tooltip("曲线前后弯曲分布，更接近0更前端，更接近1更靠近手柄")] public float FrontBackWeight = 0.5f;
+    [Range(0f, 0.1f), Tooltip("曲线的变化程度")] public float curveStiffness = 0.1f;
+
     [Header("Gizmo Display")] 
     [Range(0f,5f)] public float gizmoSize = 1;
     public bool isShowGizmoPoints;
@@ -24,8 +29,6 @@ public class bezierCurve : MonoBehaviour
     [Header("SmoothLerp")]
     public smoothLerp smoothLerp;
     [SerializeField] private float distance;
-
-    [Range(0f, 1f)] public float curveChange;
 
     private void OnDrawGizmos()
     {
@@ -47,14 +50,17 @@ public class bezierCurve : MonoBehaviour
     public void Update()
     {
         distance = smoothLerp.followers[0].distance;
-        Vector3 movingVector = smoothLerp.followers[0].movingVector;
+        Vector3 movingVector = smoothLerp.followers[0].movingVector; //direction
 
         //update Position
         curve1.anchor1 = anchor1.position;
-        curve1.controlPoint1 = anchor1.transform.position + new Vector3(0, 0, 0) + movingVector * distance * curveChange;
+        //curve1.controlPoint1 = anchor1.transform.position + new Vector3(0, 0, 0) + movingVector * distance * curveChange;
+        curve1.controlPoint1 = anchor1.position + ( (1 - FrontBackWeight) * distance * movingVector * curveStiffness);
+
 
         curve1.anchor2 = anchor2.position;
-        curve1.controlPoint2 = anchor2.position + new Vector3(0, 0, 0);
+        //curve1.controlPoint2 = anchor2.position + new Vector3(0, 0, 0);
+        curve1.controlPoint2 = anchor2.position + (FrontBackWeight * distance * movingVector * curveStiffness);
 
     }
 
