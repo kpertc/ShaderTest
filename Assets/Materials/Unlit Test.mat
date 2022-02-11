@@ -123,7 +123,7 @@ Material:
     - _Y: 1
     - _ZWrite: 1
     - _carLength: 77.59
-    - _offset: -5.63
+    - _offset: 2.01
     - _waveScale: 0.1
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}

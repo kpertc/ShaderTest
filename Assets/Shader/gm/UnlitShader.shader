@@ -3,7 +3,7 @@ Shader"GMShader/Ulit"
     Properties  
     {
         _ExampleTex("Example Texture", 2D) = "white"
-        _BaseColor("Base Color", Color) = (1, 1, 1, 1)
+        _BaseColor1("Base Color", Color) = (1, 1, 1, 1)
         _ExampleRange("Example Float Range", Range(0.0, 1.0)) = 0.5
     }
     
@@ -40,7 +40,7 @@ Shader"GMShader/Ulit"
                
             CBUFFER_START(UnityPerMaterial)
              float4 _ExampleTexture_ST;
-            half4 _BaseColor;
+            half4 _BaseColor1;
             float _ExampleRange;
             CBUFFER_END
 
@@ -60,7 +60,7 @@ Shader"GMShader/Ulit"
             half4 frag(Varyings IN):SV_Target
             
             {
-                return _BaseColor;
+                return _BaseColor1;
             }
             ENDHLSL
             

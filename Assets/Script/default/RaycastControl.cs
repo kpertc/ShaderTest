@@ -1,12 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
 using UnityEditor;
-
 using DG.Tweening;
-
 
 //[ExecuteAlways]
 public class RaycastControl : MonoBehaviour
@@ -46,16 +43,23 @@ public class RaycastControl : MonoBehaviour
 
     void onEnterAnimation (GameObject obj)
     {
+        obj.transform.DOKill();
+        
         obj.transform.DOLocalMoveX(0.5f, .2f).SetEase(Ease.InOutSine);
         obj.transform.DOScale(new Vector3(0.1f, 4 * 1.1f, 3 * 1.1f), .2f).SetEase(Ease.OutSine);
-        obj.transform.DOScale(new Vector3(0.1f, 4 * 1.05f, 3 * 1.05f), .2f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+        //obj.transform.DOScale(new Vector3(0.1f, 4 * 1.05f, 3 * 1.05f), .2f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+        
+        obj.GetComponent<Renderer>().material.SetFloat("_OutlineWidth", 0.1f);
     }
 
     void onLeaveAnimation (GameObject obj)
     {
         obj.transform.DOKill(); // Stop the hover loop
+        
         obj.transform.DOLocalMoveX(0, .2f).SetEase(Ease.InOutSine);
         obj.transform.DOScale(new Vector3(0.1f, 4, 3), .2f).SetEase(Ease.OutSine);
+        
+        obj.GetComponent<Renderer>().material.SetFloat("_OutlineWidth", 0.0f);
     }
 
     private void OnEnable()

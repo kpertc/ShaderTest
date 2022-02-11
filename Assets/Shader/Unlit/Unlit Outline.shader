@@ -8,11 +8,11 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
         _BaseColor1("Base Color", Color) = (1, 1, 1, 1)
         _BaseMap1 ("BaseMap", 2D) = "white"{}
         _OutlineColor("Outline Color", Color) = (1, 1, 1, 1)
-        _OutlineWidth ("Outline Width", Range(-1, 1)) = 0
+        _OutlineWidth ("Outline Width", Range(0, 1.5)) = 0
     }
     SubShader
     {
-        Tags{"RenderType" = "Opaque" "RenderPipeline" = "UniversalRenderPipeline"}
+        Tags{"RenderType" = "Transparent" "RenderPipeline" = "UniversalRenderPipeline"}
         LOD 300
 
         
@@ -28,34 +28,40 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
             #pragma vertex vert
             #pragma fragment frag
 
+            //shadows?
+            #pragma multi_compile _ _ADDITIONAL_LIGHT_SHADOWS
+            #pragma multi_compile _ _SHADOWS_SOFT
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
+
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             
             struct Attributes
             {
                 float4 positionOS : POSITION;
-                float3 normalOS   : NORMAL;
             };
 
             struct Varyings
             {
                 float4 positionCS   : SV_POSITION;
+                float3 clipNornal : TEXCOORD1;
             };
 
             CBUFFER_START(UnityPerMaterial)
                 half _OutlineWidth;
                 half4 _OutlineColor;
             CBUFFER_END
-
+            
             Varyings vert(Attributes input)
             {
                 Varyings output;
-
+                
                 // Get ClipSpace
                 float4 clipPosition = GetVertexPositionInputs(input.positionOS.xyz).positionCS;
 
                 // get ClipSpace Normal ???
                 float3 clipNormal = mul((float3x3) UNITY_MATRIX_VP, mul((float3x3) UNITY_MATRIX_M, input.positionOS.xyz));
-                                
+                
                 clipPosition.xyz += clipNormal * _OutlineWidth;
                 
                 output.positionCS = clipPosition ;
@@ -65,9 +71,7 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
 
             half4 frag(Varyings input) : SV_Target
             {
-                half4 return1 = _OutlineColor;
-
-                return return1;
+                return _OutlineColor;
             }
             
             ENDHLSL
@@ -89,7 +93,6 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
 
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS_CASCADE
 
-
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
@@ -97,7 +100,7 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
             struct Attributes
             {
                 float4 positionOS : POSITION;
-                float2 uv           : TEXCOORD0;
+                float2 uv         : TEXCOORD0;
                 float3 normalOS   : NORMAL;
             };
 
@@ -137,6 +140,10 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
             ENDHLSL
 
         }
+        
+        UsePass "Universal Render Pipeline/Lit/ShadowCaster"
+        
+        
         
         
 
