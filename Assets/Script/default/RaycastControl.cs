@@ -36,6 +36,13 @@ public class RaycastControl : MonoBehaviour
     public bool showdirectPosMesh;
     public bool showSmoothPosMesh;
 
+    [Space(5)]
+    [Header("Hover Effect Control")]
+    [Range(0f, 10f)]public float rotationIntensity = 1;
+
+    public bool enableTranslation;
+    public bool enableRotation;
+
     //Events
     public event Action<GameObject> onRayCastEnter;
     public event Action<GameObject> onRayCasting;
@@ -55,17 +62,32 @@ public class RaycastControl : MonoBehaviour
     void onLeaveAnimation (GameObject obj)
     {
         obj.transform.DOKill(); // Stop the hover loop
+        obj.transform.DOLocalRotate(new Vector3(0,0,0), .05f).SetEase(Ease.InSine); // Stop Rotation first
         
-        obj.transform.DOLocalMoveX(0, .2f).SetEase(Ease.InOutSine);
+        obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos, .3f).SetEase(Ease.InOutSine);
+        
         obj.transform.DOScale(new Vector3(0.1f, 4, 3), .2f).SetEase(Ease.OutSine);
         
         obj.GetComponent<Renderer>().material.SetFloat("_OutlineWidth", 0.0f);
     }
 
+    void onAnimation(GameObject obj)
+    {
+        // Get smoothPos relative to obj direction
+        Vector3 rotDir = (smoothPos.transform.position - obj.transform.position).normalized; //x is height // Y Z is moving
+        
+        // Translation
+        if (enableTranslation) obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos + new Vector3(0, rotDir.y, rotDir.z) * 0.3f, .1f).SetEase(Ease.InSine);
+            
+        //rotation
+        if (enableRotation) obj.transform.DOLocalRotate(new Vector3(0,- rotDir.z, rotDir.y) * rotationIntensity, .05f).SetEase(Ease.InSine);
+ 
+    }
+
     private void OnEnable()
     {
         onRayCastEnter += (objName) => { if (objName != null && objName.layer == 5) onEnterAnimation(objName); };
-        onRayCasting += (objName) => {};
+        onRayCasting += (objName) => { if (objName != null && objName.layer == 5) onAnimation(objName); };
         onRayCastLeave += (objName) => { if (objName != null && objName.layer == 5) onLeaveAnimation(objName); };
     }
     private void OnDestroy()

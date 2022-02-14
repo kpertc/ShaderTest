@@ -3,13 +3,18 @@ Shader "my_Shader/unlit/Blur_Unlit"
     Properties
     {
         _BaseColor1("Base Color", Color) = (1, 1, 1, 1)
-        _BaseMap1 ("BaseMap", 2D) = "white"{}
+        //_BaseMap1 ("BaseMap", 2D) = "white"{}
         
-        _blurIntensity ("Outline Width", Range(0, 20)) = 0.01
+        _blurIntensity ("_blurIntensity", Range(0, 20)) = 0.01
     }
     SubShader
     {
-        Tags{"RenderType" = "Transparent" "RenderPipeline" = "UniversalRenderPipeline" "IgnoreProjector" = "True"}
+        Tags{
+            "RenderPipeline" = "UniversalRenderPipeline" 
+            "IgnoreProjector" = "True" 
+            "RenderType" = "Geometry" 
+            "Queue" = "Transparent"
+        }
         LOD 300
 
         Pass
@@ -42,21 +47,24 @@ Shader "my_Shader/unlit/Blur_Unlit"
             {
                 float2 uv           : TEXCOORD0;
                 float4 positionCS   : SV_POSITION;
+                float4 scrPos : TEXCOORD1;
             };
 
-            TEXTURE2D(_BaseMap1);
-            SAMPLER(sampler_BaseMap1);
+            //TEXTURE2D(_BaseMap1);
+            //SAMPLER(sampler_BaseMap1);
+
+            //TEXTURE2D (_CameraOpaqueTexture);
+            //SAMPLER(sampler_CameraOpaqueTexture);
 
             TEXTURE2D (_CameraColorTexture);
             SAMPLER(sampler_CameraColorTexture);
-
+            
             CBUFFER_START(UnityPerMaterial)
-                half4 _BaseColor1;
+                float4 _BaseColor1;
                 half _blurIntensity;
 
-                float4 _BaseMap1_TexelSize; //get texture size
+                //float4 _BaseMap1_TexelSize; //get texture size
                 float4 _CameraColorTexture_TexelSize;
-            
             CBUFFER_END
 
             
@@ -65,56 +73,37 @@ Shader "my_Shader/unlit/Blur_Unlit"
             {
                 Varyings output;
                 VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
-
-                
                 
                 output.positionCS = vertexInput.positionCS;
+                output.uv = input.uv;
 
-                output.uv = output.positionCS.xy * -1 * 0.9;
+                output.scrPos = ComputeScreenPos(vertexInput.positionCS);
 
                 return output;
             }
 
             half4 frag(Varyings input) : SV_Target
             {
-                //float2 _uv = input.positionCS.xy/_ScreenParams.xy;
-                float4 camera = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, input.uv);
+                //project screen image
+                float2 screenPos = input.scrPos.xy / input.scrPos.w; // UNITY_PROJ_COORD
                 
-                return float4(camera);
-
- 
+                //float4 camera = SAMPLE_TEXTURE2D(_CameraOpaqueTexture, samplers_CameraOpaqueTexture, screenPos);
+                float4 camera = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, screenPos);
                 
-            }
-
-            ENDHLSL
-
-        }
-
-
-
-        }
-    
-    //https://blog.csdn.net/avi9111/article/details/120892104
-
-    //FallBack "Unlit/Color"
-
-    }
-
-
-/*
-                float dis = _blurIntensity * _BaseMap1_TexelSize;
+                //Blur Kernel
+                float dis = _blurIntensity * _CameraColorTexture_TexelSize;
             
-                float4 c1 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x - dis, input.uv.y - dis ));
-                float4 c2 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x + 0, input.uv.y - dis ));
-                float4 c3 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x + dis, input.uv.y - dis ));
+                float4 c1 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x - dis, screenPos.y - dis ));
+                float4 c2 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x + 0, screenPos.y - dis ));
+                float4 c3 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x + dis, screenPos.y - dis ));
 
-                float4 c4 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x - dis, input.uv.y + 0 ));
-                float4 c5 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x + 0, input.uv.y + 0 ));
-                float4 c6 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x + dis, input.uv.y + 0 ));
+                float4 c4 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x - dis, screenPos.y + 0 ));
+                float4 c5 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x + 0, screenPos.y + 0 ));
+                float4 c6 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x + dis, screenPos.y + 0 ));
 
-                float4 c7 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x - dis, input.uv.y + dis ));
-                float4 c8 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x + 0, input.uv.y + dis ));
-                float4 c9 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (input.uv.x + dis, input.uv.y + dis ));
+                float4 c7 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x - dis, screenPos.y + dis ));
+                float4 c8 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x + 0, screenPos.y + dis ));
+                float4 c9 = SAMPLE_TEXTURE2D(_CameraColorTexture, sampler_CameraColorTexture, float2 (screenPos.x + dis, screenPos.y + dis ));
 
                 // Gaussian Distribution
                 float4 outPutColor = (
@@ -122,8 +111,13 @@ Shader "my_Shader/unlit/Blur_Unlit"
                     c4 * 0.118318 + c5 * 0.147761 + c6 * 0.118318 +
                     c7 * 0.094741 + c8 * 0.118318 + c9 * 0.094741
                 );
-
-                */
-
                 
-                //return outPutColor * _BaseColor1;
+                return float4(outPutColor.rgb * _BaseColor1.rgb ,1);
+            }
+            ENDHLSL
+        }
+    }
+    //https://blog.csdn.net/avi9111/article/details/120892104
+    //https://blog.csdn.net/zakerhero/article/details/115693Unity%20URP88 URP获取深度图
+    //FallBack "Unlit/Color"
+}
