@@ -38,6 +38,7 @@ public class RaycastControl : MonoBehaviour
 
     [Space(5)]
     [Header("Hover Effect Control")]
+    [Range(0f, 1f)] public float translationIntensity = 0.3f;
     [Range(0f, 10f)]public float rotationIntensity = 1;
 
     public bool enableTranslation;
@@ -51,37 +52,61 @@ public class RaycastControl : MonoBehaviour
     void onEnterAnimation (GameObject obj)
     {
         obj.transform.DOKill();
+
+        if (obj.tag == "UI")
+        {
+            obj.transform.DOLocalMoveX(0.5f, .2f).SetEase(Ease.InOutSine);
+            obj.transform.DOScale(new Vector3(0.1f, 4 * 1.1f, 3 * 1.1f), .2f).SetEase(Ease.OutSine);
+            //obj.transform.DOScale(new Vector3(0.1f, 4 * 1.05f, 3 * 1.05f), .2f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
         
-        obj.transform.DOLocalMoveX(0.5f, .2f).SetEase(Ease.InOutSine);
-        obj.transform.DOScale(new Vector3(0.1f, 4 * 1.1f, 3 * 1.1f), .2f).SetEase(Ease.OutSine);
-        //obj.transform.DOScale(new Vector3(0.1f, 4 * 1.05f, 3 * 1.05f), .2f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
+            obj.GetComponent<Renderer>().material.DOFloat(0.08f, "_OutlineWidth", 0.2f).SetEase(Ease.OutSine);
+        }
         
-        obj.GetComponent<Renderer>().material.SetFloat("_OutlineWidth", 0.1f);
+        //Turn-on Hightlight
+        obj.GetComponent<Renderer>().material.DOFloat(0.5f, "_intensity", 0.2f).SetEase(Ease.OutSine);
     }
 
     void onLeaveAnimation (GameObject obj)
     {
         obj.transform.DOKill(); // Stop the hover loop
-        obj.transform.DOLocalRotate(new Vector3(0,0,0), .05f).SetEase(Ease.InSine); // Stop Rotation first
+
+        if (obj.tag == "UI")
+        {
+            obj.transform.DOLocalRotate(new Vector3(0, 0, 0), .05f).SetEase(Ease.InSine); // Stop Rotation first
+
+            obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos, .3f).SetEase(Ease.InOutSine);
+
+            obj.transform.DOScale(new Vector3(0.1f, 4, 3), .2f).SetEase(Ease.OutSine);
+
+            obj.GetComponent<Renderer>().material.DOFloat(0.0f, "_OutlineWidth", 0.2f).SetEase(Ease.OutSine);
+        }
         
-        obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos, .3f).SetEase(Ease.InOutSine);
-        
-        obj.transform.DOScale(new Vector3(0.1f, 4, 3), .2f).SetEase(Ease.OutSine);
-        
-        obj.GetComponent<Renderer>().material.SetFloat("_OutlineWidth", 0.0f);
+        //Turn-off HighLight
+        obj.GetComponent<Renderer>().material.DOFloat(0f, "_intensity", 0.2f).SetEase(Ease.OutSine);
     }
 
     void onAnimation(GameObject obj)
     {
-        // Get smoothPos relative to obj direction
-        Vector3 rotDir = (smoothPos.transform.position - obj.transform.position).normalized; //x is height // Y Z is moving
+        if (obj.tag == "UI")
+        {
+            // Get smoothPos relative to obj direction
+            Vector3 rotDir = (smoothPos.transform.position - obj.transform.position).normalized; //x is height // Y Z is moving
         
-        // Translation
-        if (enableTranslation) obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos + new Vector3(0, rotDir.y, rotDir.z) * 0.3f, .1f).SetEase(Ease.InSine);
+            // Translation
+            if (enableTranslation) obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos + new Vector3(0, rotDir.y, rotDir.z) * translationIntensity, .02f).SetEase(Ease.InSine);
             
-        //rotation
-        if (enableRotation) obj.transform.DOLocalRotate(new Vector3(0,- rotDir.z, rotDir.y) * rotationIntensity, .05f).SetEase(Ease.InSine);
- 
+            //rotation
+            if (enableRotation) obj.transform.DOLocalRotate(new Vector3(0,- rotDir.z, rotDir.y) * rotationIntensity, .05f).SetEase(Ease.InSine);
+        
+            // HighLight
+            obj.GetComponent<Renderer>().material.DOVector(hitPosition, "_inputWS",0.05f);
+        }
+        
+        else if (obj.tag == "Panel")
+        {
+            // HighLight
+            obj.GetComponent<Renderer>().material.DOVector(smoothPos.transform.position, "_inputWS",0.05f);
+        }
     }
 
     private void OnEnable()

@@ -7,8 +7,14 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
     {
         _BaseColor1("Base Color", Color) = (1, 1, 1, 1)
         _BaseMap1 ("BaseMap", 2D) = "white"{}
+        
         _OutlineColor("Outline Color", Color) = (1, 1, 1, 1)
         _OutlineWidth ("Outline Width", Range(0, 1.5)) = 0
+        
+        _radius("Radius", Range(0.0, 5.0)) = 1.0
+        _intensity("Intensity", Range(0.0, 3.0)) = 1.0
+        _inputWS("Input World Position", Vector) = (0,0,0)
+        
     }
     SubShader
     {
@@ -80,8 +86,12 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
         
         Pass
         {
-            Name "StandardLit"
-            Tags{"LightMode" = "UniversalForward"}
+            Name "unLit + Halo"
+            Tags{
+                "LightMode" = "UniversalForward"
+                "RenderType" = "Transparent"
+                "Queue" = "Transparent"
+            }
 
             HLSLPROGRAM
             //#pragma prefer_hlslcc gles
@@ -108,10 +118,15 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
             {
                 float2 uv           : TEXCOORD0;
                 float4 positionCS   : SV_POSITION;
+                float4 positionWS   : TEXCOORD1;
             };
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor1;
+                float3 _inputWS;
+
+                half _radius;
+                half _intensity;
             CBUFFER_END
 
             TEXTURE2D(_BaseMap1);
@@ -121,6 +136,9 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
             {
                 Varyings output;
                 VertexPositionInputs vertexInput = GetVertexPositionInputs(input.positionOS.xyz);
+
+                output.positionWS = mul(unity_ObjectToWorld, float4(input.positionOS.xyz,1)); // Get World Pos
+                
                 output.uv = input.uv;
 
                 output.positionCS = vertexInput.positionCS;
@@ -132,7 +150,9 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
             {
                 float4 _baseTex = SAMPLE_TEXTURE2D(_BaseMap1,sampler_BaseMap1,input.uv);
 
-                half4 return1 = _baseTex * _BaseColor1;
+                half highlight = (1 - saturate(_radius * distance(input.positionWS , _inputWS))) * _intensity;
+
+                half4 return1 = ( _baseTex * _BaseColor1 + highlight);
 
                 return return1;
             }
