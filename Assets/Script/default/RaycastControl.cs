@@ -23,8 +23,33 @@ public class RaycastControl : MonoBehaviour
     [HideInInspector] public float hitPointDistance;
 
     [Header("Position Settings")]
-    public GameObject directPos;
-    public GameObject smoothPos;
+    [Range(0f, 1f)] public float smoothTime = 0.3F;
+
+    #region smoothPos
+    
+    [ReadOnly] public Vector3 directPos;
+    [ReadOnly] public Vector3 smoothPos;
+        
+    //[ReadOnly] public Vector3 Offset = new Vector3(0,0,0);
+    [ReadOnly] public float distance;
+    [ReadOnly] public Vector3 movingVector;
+    private Vector3 velocity = Vector3.zero;
+    
+    public void smoothPos_Update()
+    {
+        //Vector3 targetPosition = directPos.TransformPoint(Offset);
+
+        movingVector = directPos - smoothPos;
+
+        smoothPos = Vector3.SmoothDamp(smoothPos, directPos, ref velocity, smoothTime);
+
+        distance = Vector3.Distance(smoothPos, directPos);
+
+        //smoothPos.eulerAngles = directPos.eulerAngles;  
+    }
+    
+    #endregion
+    
     [Range(0f, 1f)] public float directPos_surfaceNormalOffset;
 
     [Header("Visual_Gizmo Toggles")]
@@ -90,7 +115,7 @@ public class RaycastControl : MonoBehaviour
         if (obj.tag == "UI")
         {
             // Get smoothPos relative to obj direction
-            Vector3 rotDir = (smoothPos.transform.position - obj.transform.position).normalized; //x is height // Y Z is moving
+            Vector3 rotDir = (smoothPos - obj.transform.position).normalized; //x is height // Y Z is moving
         
             // Translation
             if (enableTranslation) obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos + new Vector3(0, rotDir.y, rotDir.z) * translationIntensity, .02f).SetEase(Ease.InSine);
@@ -105,7 +130,7 @@ public class RaycastControl : MonoBehaviour
         else if (obj.tag == "Panel")
         {
             // HighLight
-            obj.GetComponent<Renderer>().material.DOVector(smoothPos.transform.position, "_inputWS",0.05f);
+            obj.GetComponent<Renderer>().material.DOVector(smoothPos, "_inputWS",0.05f);
         }
     }
 
@@ -149,7 +174,7 @@ public class RaycastControl : MonoBehaviour
             hitPointDistance = Vector3.Distance(transform.position, hitPosition);
 
             // directPos Normal Offset
-            directPos.transform.position = hit.point + hit.normal * directPos_surfaceNormalOffset;
+            directPos = hit.point + hit.normal * directPos_surfaceNormalOffset;
         }
 
         else
@@ -163,6 +188,9 @@ public class RaycastControl : MonoBehaviour
         }
 
         visualControl(isCasted);
+        
+        // Update SmoothPos
+        smoothPos_Update();
     }
 
     void castedObjectRecord ()
@@ -188,8 +216,8 @@ public class RaycastControl : MonoBehaviour
 
     void visualControl (bool isCasted)
     {
-        if(showdirectPosMesh) directPos.GetComponent<Renderer>().enabled = isCasted;
-        if(showSmoothPosMesh) smoothPos.GetComponent<Renderer>().enabled = isCasted;
+        //if(showdirectPosMesh) directPos.GetComponent<Renderer>().enabled = isCasted;
+        //if(showSmoothPosMesh) smoothPos.GetComponent<Renderer>().enabled = isCasted;
     }
 
     void OnDrawGizmos()
@@ -221,7 +249,16 @@ public class RaycastControl : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawLine(transform.position, transform.position + transform.right);
     }
+    
+// ----------------------Lerp Follower Integration-------------------------------------
+
+
+   
+    
 }
+
+
+
 
 
 

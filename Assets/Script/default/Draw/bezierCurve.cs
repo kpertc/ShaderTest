@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,9 +15,9 @@ public class bezierCurve : MonoBehaviour
     [Range(0f,1f)] public float t = 0;
 
     [Space(20)]
-    [Header("Curve Settings ÇúÏßµ÷½Ú")]
-    [Range(0f, 1f), Tooltip("ÇúÏßÇ°ºóÍäÇú·Ö²¼£¬¸ü½Ó½ü0¸üÇ°¶Ë£¬¸ü½Ó½ü1¸ü¿¿½üÊÖ±ú")] public float FrontBackWeight = 0.5f;
-    [Range(0f, 0.3f), Tooltip("ÇúÏßµÄ±ä»¯³Ì¶È")] public float curveStiffness = 0.1f;
+    [Header("Curve Settings ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½")]
+    [Range(0f, 1f), Tooltip("ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó½ï¿½0ï¿½ï¿½Ç°ï¿½Ë£ï¿½ï¿½ï¿½ï¿½Ó½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½")] public float FrontBackWeight = 0.5f;
+    [Range(0f, 0.3f), Tooltip("ï¿½ï¿½ï¿½ßµÄ±ä»¯ï¿½Ì¶ï¿½")] public float curveStiffness = 0.1f;
 
     [Header("Gizmo Display")] 
     [Range(0f,5f)] public float gizmoSize = 1;
@@ -28,9 +29,13 @@ public class bezierCurve : MonoBehaviour
     public CurveSegment curve1 = new CurveSegment();
 
     [Header("SmoothLerp")]
-    public smoothLerp smoothLerp;
+    //public smoothLerp smoothLerp;
     [SerializeField] private float distance;
+    
+    public RaycastControl _RaycastControl;
 
+    [HideInInspector] public Vector3[] lineRendererPos;
+    
     private void OnDrawGizmos()
     {
         curve1.t = t;
@@ -50,16 +55,19 @@ public class bezierCurve : MonoBehaviour
 
     public void Update()
     {
-        distance = smoothLerp.followers[0].distance;
-        Vector3 movingVector = smoothLerp.followers[0].movingVector.normalized; //direction
+        //distance = smoothLerp.followers[0].distance;
+        //Vector3 movingVector = smoothLerp.followers[0].movingVector.normalized; //direction
+        
+        distance = _RaycastControl.distance;
+        Vector3 movingVector = _RaycastControl.movingVector.normalized; //direction
 
         //update Position
-        curve1.anchor1 = anchor1.position;
+        curve1.anchor1 = _RaycastControl.directPos;
         //curve1.controlPoint1 = anchor1.transform.position + new Vector3(0, 0, 0) + movingVector * distance * curveChange;
         curve1.controlPoint1 = anchor1.position + ( (1 - FrontBackWeight) * distance * movingVector * curveStiffness);
 
 
-        curve1.anchor2 = anchor2.position;
+        curve1.anchor2 =  _RaycastControl.smoothPos;
         //curve1.controlPoint2 = anchor2.position + new Vector3(0, 0, 0);
         curve1.controlPoint2 = anchor2.position + (FrontBackWeight * distance * movingVector * curveStiffness);
 

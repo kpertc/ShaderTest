@@ -25,10 +25,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _Culling: 1
     - _FresnelInDensity: 100
     - _FresnelScale: 0.6
     - _OutlineWidth: 0.089
+    - _intensity: 1
+    - _radius: 1
     m_Colors:
     - _BaseColor1: {r: 1, g: 1, b: 1, a: 1}
     - _OutlineColor: {r: 0.9491596, g: 1, b: 0, a: 1}
+    - _inputWS: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []

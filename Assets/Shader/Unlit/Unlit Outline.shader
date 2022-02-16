@@ -14,7 +14,6 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
         _radius("Radius", Range(0.0, 5.0)) = 1.0
         _intensity("Intensity", Range(0.0, 3.0)) = 1.0
         _inputWS("Input World Position", Vector) = (0,0,0)
-        
     }
     SubShader
     {
@@ -162,12 +161,6 @@ Shader "my_Shader/unlit/standard_Unlit_Outline"
         }
         
         UsePass "Universal Render Pipeline/Lit/ShadowCaster"
-        
-        
-        
-        
-
-
 
         }
 
