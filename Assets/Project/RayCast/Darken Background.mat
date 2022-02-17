@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Outline 1
+  m_Name: Darken Background
   m_Shader: {fileID: 4800000, guid: 68615d5ffea0e9446a2d931b6b3dc374, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4

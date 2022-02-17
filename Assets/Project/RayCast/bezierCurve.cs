@@ -1,84 +1,76 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
 //[ExecuteAlways]
-[ExecuteInEditMode]
+//[ExecuteInEditMode]
 public class bezierCurve : MonoBehaviour
 {
-    public string abc = "123";
-    public Transform anchor1;
-    public Transform anchor2;
+    private RaycastControl _RaycastControl;
+    private LineRenderer _LineRenderer;
 
-    [Range(0f,1f)] public float t = 0;
+    [Range(0f, 1f)] public float t = 0;
 
-    [Space(20)]
-    [Header("Curve Settings ���ߵ���")]
-    [Range(0f, 1f), Tooltip("����ǰ�������ֲ������ӽ�0��ǰ�ˣ����ӽ�1�������ֱ�")] public float FrontBackWeight = 0.5f;
-    [Range(0f, 0.3f), Tooltip("���ߵı仯�̶�")] public float curveStiffness = 0.1f;
+    [Space(10)]
+    [Header("Curve Settings")]
+    [Range(0f, 1f)] public float FrontBackWeight = 0.5f;
+    [Range(0f, 0.3f), Tooltip("")] public float curveStiffness = 0.1f;
 
     [Header("Gizmo Display")] 
-    [Range(0f,5f)] public float gizmoSize = 1;
-    public bool isShowGizmoPoints;
-    public bool isShowGizmoTPoint;
-    public bool isShowBeizerCurve;
-    public bool isShowSampling;
+    [Range(0f,5f)] public float gizmoSize = 0.1f;
 
-    public CurveSegment curve1 = new CurveSegment();
+    public bool showGizmoPoints;
+    public bool showGizmoTPoint;
+    public bool showBeizerCurve;
+    public bool showSampling;
 
-    [Header("SmoothLerp")]
-    //public smoothLerp smoothLerp;
-    [SerializeField] private float distance;
-    
-    public RaycastControl _RaycastControl;
+    [readOnlyAttribute] public CurveSegment curve1 = new CurveSegment();
 
     [HideInInspector] public Vector3[] lineRendererPos;
     
     private void OnDrawGizmos()
     {
         curve1.t = t;
-        //curve1.visMono(gizmoSize);
-        //curve1.sampling();
-        //curve1.vis_Gizmo_sampling();
 
-        if (isShowGizmoPoints) curve1.vis_Gizmo_CurvePoints(gizmoSize); 
-        if (isShowGizmoTPoint) curve1.vis_Handle_TPoint();
-        if (isShowBeizerCurve) curve1.vis_handles_Bezier(gizmoSize);
-        if (isShowSampling)
-        {
-            curve1.sampling();
-            curve1.vis_Gizmo_sampling(gizmoSize);
-        }
+        if (showGizmoPoints) curve1.vis_Gizmo_CurvePoints(gizmoSize); 
+        if (showGizmoTPoint) curve1.vis_Handle_TPoint();
+        if (showBeizerCurve) curve1.vis_handles_Bezier(gizmoSize);
+        if (showSampling) curve1.vis_Gizmo_sampling(gizmoSize);
+
+    }
+
+    public void Start()
+    {
+        _RaycastControl = GetComponent<RaycastControl>();
+        _LineRenderer = GetComponent<LineRenderer>();
     }
 
     public void Update()
     {
-        //distance = smoothLerp.followers[0].distance;
-        //Vector3 movingVector = smoothLerp.followers[0].movingVector.normalized; //direction
-        
-        distance = _RaycastControl.distance;
+        float distance = _RaycastControl.distance;
         Vector3 movingVector = _RaycastControl.movingVector.normalized; //direction
 
         //update Position
-        curve1.anchor1 = _RaycastControl.directPos;
-        //curve1.controlPoint1 = anchor1.transform.position + new Vector3(0, 0, 0) + movingVector * distance * curveChange;
-        curve1.controlPoint1 = anchor1.position + ( (1 - FrontBackWeight) * distance * movingVector * curveStiffness);
+        curve1.anchor1 = _RaycastControl.smoothPos;
+        curve1.controlPoint1 = curve1.anchor1 + ((1 - FrontBackWeight) * distance * movingVector * curveStiffness);
 
+        curve1.anchor2 =  _RaycastControl.transform.position;
+        curve1.controlPoint2 = curve1.anchor2 + (FrontBackWeight * distance * movingVector * curveStiffness);
 
-        curve1.anchor2 =  _RaycastControl.smoothPos;
-        //curve1.controlPoint2 = anchor2.position + new Vector3(0, 0, 0);
-        curve1.controlPoint2 = anchor2.position + (FrontBackWeight * distance * movingVector * curveStiffness);
-
+        curve1.sampling();
+        LRUpdate();
     }
 
-    public static class drawLineUtil
+    private void LRUpdate() //Line Renderer Update
     {
+        CurveSegment.t_PosRot[] _samples = curve1.samples;
+        lineRendererPos = new Vector3[_samples.Length];
+        for (int i = 0; i < _samples.Length; i++) lineRendererPos[i] = _samples[i].pos;
 
+        _LineRenderer.positionCount = _samples.Length; //set Count First
+        _LineRenderer.SetPositions(lineRendererPos); //Set Positions
     }
 }
-
 
 [System.Serializable]
 public class CurveSegment
@@ -92,7 +84,7 @@ public class CurveSegment
 
     // Samples
     [Range(1, 50)] public int sampleNum = 1;
-    private float smapleInterval;
+    private float sampleInterval;
     public t_PosRot[] samples;
 
     // T-Related
@@ -144,14 +136,14 @@ public class CurveSegment
     // Sampling
     public void sampling()
     {
-        smapleInterval = 1 / (float)sampleNum;
+        sampleInterval = 1 / (float)sampleNum;
         //Debug.Log(smapleInterval);
         samples = new t_PosRot[sampleNum + 1];
         float tempT;
 
         for (int i = 0; i <= sampleNum; i++)
         {
-            tempT = i * smapleInterval;
+            tempT = i * sampleInterval;
 
             samples[i] = GetTPoint(tempT);
 
@@ -209,29 +201,4 @@ public class CurveSegment
         controlPoint1 = Handles.DoPositionHandle(controlPoint1, Quaternion.identity);
         controlPoint2 = Handles.DoPositionHandle(controlPoint2, Quaternion.identity);
     }
-}
-
-
-[CustomEditor(typeof(bezierCurve))]
-public class drawLineHandleEditor : Editor
-{
-
-
-    protected virtual void OnSceneGUI()
-    {
-        bezierCurve handleExample = (bezierCurve)target;
-
-        if (handleExample == null) return;
-
-        //Handles.color = Color.yellow;
-
-        //GUIStyle style = new GUIStyle();
-        //style.normal.textColor = Color.green;
-
-        //Vector3 position = handleExample.transform.position + Vector3.up * 2f;
-        //string posString = position.ToString();
-
-        //handleExample.curve1.visEditor();
-    }
-
 }

@@ -9,9 +9,9 @@ using DG.Tweening;
 public class RaycastControl : MonoBehaviour
 {
     [Header("Raycast Parameters (ReadOnly)")]
-    [ReadOnly] public bool isCasted;
-    [ReadOnly] public string CastedObject = "Nothing";
-    [ReadOnly] public GameObject lastCastedObject;
+    [readOnlyAttribute] public bool isCasted;
+    [readOnlyAttribute] public string CastedObject = "Nothing";
+    [readOnlyAttribute] public GameObject lastCastedObject;
 
     [Space(10)]
     private GameObject CastedObjectDelay;
@@ -23,19 +23,20 @@ public class RaycastControl : MonoBehaviour
     [HideInInspector] public float hitPointDistance;
 
     [Header("Position Settings")]
-    [Range(0f, 1f)] public float smoothTime = 0.3F;
-
     #region smoothPos
-    
-    [ReadOnly] public Vector3 directPos;
-    [ReadOnly] public Vector3 smoothPos;
+
+    [Range(0f, 1f)] public float smoothTime = 0.3F;
+    [Range(0f, 1f)] public float directPosSurfaceNormalOffset;
+
+    [readOnlyAttribute] public Vector3 directPos;
+    [readOnlyAttribute] public Vector3 smoothPos;
         
     //[ReadOnly] public Vector3 Offset = new Vector3(0,0,0);
-    [ReadOnly] public float distance;
-    [ReadOnly] public Vector3 movingVector;
+    [readOnlyAttribute] public float distance;
+    [readOnlyAttribute] public Vector3 movingVector;
     private Vector3 velocity = Vector3.zero;
     
-    public void smoothPos_Update()
+    public void smoothPos_Update() // Lerp Integration
     {
         //Vector3 targetPosition = directPos.TransformPoint(Offset);
 
@@ -49,25 +50,25 @@ public class RaycastControl : MonoBehaviour
     }
     
     #endregion
-    
-    [Range(0f, 1f)] public float directPos_surfaceNormalOffset;
 
-    [Header("Visual_Gizmo Toggles")]
-    public bool isDrawSeldDir;
-    public bool isDrawHitGizmo;
-    public bool isDrawHitNormal;
+    [Header("Debug Gizmo Visual")]
+    public bool showDir;
+    public bool showHit;
+    public bool showHitNormal;
 
     [Space(5)]
-    public bool showdirectPosMesh;
-    public bool showSmoothPosMesh;
+    [Range(0f, 1f)] public float gizmoSphereSize = 0.3f;
+    public bool showDirectPos;
+    public bool showSmoothPos;
 
     [Space(5)]
     [Header("Hover Effect Control")]
-    [Range(0f, 1f)] public float translationIntensity = 0.3f;
-    [Range(0f, 10f)]public float rotationIntensity = 1;
-
+    
     public bool enableTranslation;
     public bool enableRotation;
+
+    [Range(0f, 1f)] public float translationIntensity = 0.3f;
+    [Range(0f, 10f)]public float rotationIntensity = 1;
 
     //Events
     public event Action<GameObject> onRayCastEnter;
@@ -145,7 +146,6 @@ public class RaycastControl : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
         // Updates
@@ -174,7 +174,7 @@ public class RaycastControl : MonoBehaviour
             hitPointDistance = Vector3.Distance(transform.position, hitPosition);
 
             // directPos Normal Offset
-            directPos = hit.point + hit.normal * directPos_surfaceNormalOffset;
+            directPos = hit.point + hit.normal * directPosSurfaceNormalOffset;
         }
 
         else
@@ -186,8 +186,6 @@ public class RaycastControl : MonoBehaviour
             //check object to trigger enter&leave event
             castedObjectRecord();
         }
-
-        visualControl(isCasted);
         
         // Update SmoothPos
         smoothPos_Update();
@@ -214,75 +212,50 @@ public class RaycastControl : MonoBehaviour
         CastedObjectDelay = castedGameObject;
     }
 
-    void visualControl (bool isCasted)
-    {
-        //if(showdirectPosMesh) directPos.GetComponent<Renderer>().enabled = isCasted;
-        //if(showSmoothPosMesh) smoothPos.GetComponent<Renderer>().enabled = isCasted;
-    }
-
     void OnDrawGizmos()
     {
-        if (isDrawSeldDir) drawSelfDir();
-
         if (isCasted)
         {
-            if (isDrawHitGizmo) Gizmos.DrawIcon(hitPosition, "aim_1024.png", true);
-
-            if (isDrawHitNormal) {
-                Gizmos.color = Color.green;
+            if (showHitNormal) {
+                Gizmos.color = Color.blue;
                 Gizmos.DrawLine(hitPosition, hitPosition + hitPositionNormal);
             }
+
+            if (showHit)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(hitPosition, gizmoSphereSize);
+            }
+
+            if (showDirectPos)
+            {
+                Gizmos.color = Color.yellow;
+                Gizmos.DrawSphere(directPos, gizmoSphereSize);
+            }
+
+            if (showSmoothPos)
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawSphere(smoothPos, gizmoSphereSize);
+            }
         }
-    }
 
-    void drawSelfDir()
-    {
-        //Forward
-        Gizmos.color = Color.blue;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 10);
+        
 
-        //Upward
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(transform.position, transform.position + transform.up);
+        //Show Controller Object Dir
+        if (showDir)
+        {
+            //Forward
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(transform.position, transform.position + transform.forward * 10);
 
-        //right
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + transform.right);
-    }
-    
-// ----------------------Lerp Follower Integration-------------------------------------
+            //Upward
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, transform.position + transform.up);
 
-
-   
-    
-}
-
-
-
-
-
-
-// ----------------------[ReadOnly]Drawer-------------------------------------
-public class ReadOnlyAttribute : PropertyAttribute
-{
-
-}
-
-[CustomPropertyDrawer(typeof(ReadOnlyAttribute))]
-public class ReadOnlyDrawer : PropertyDrawer
-{
-    public override float GetPropertyHeight(SerializedProperty property,
-                                            GUIContent label)
-    {
-        return EditorGUI.GetPropertyHeight(property, label, true);
-    }
-
-    public override void OnGUI(Rect position,
-                               SerializedProperty property,
-                               GUIContent label)
-    {
-        GUI.enabled = false;
-        EditorGUI.PropertyField(position, property, label, true);
-        GUI.enabled = true;
-    }
+            //right
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, transform.position + transform.right);
+        }
+    }    
 }
