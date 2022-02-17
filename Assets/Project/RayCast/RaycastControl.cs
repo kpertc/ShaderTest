@@ -21,6 +21,7 @@ public class RaycastControl : MonoBehaviour
     [HideInInspector] public Vector3 hitPositionNormal;
     [HideInInspector] public Vector3 hitPositionNormalRotation;
     [HideInInspector] public float hitPointDistance;
+    [HideInInspector] public Vector3 outPutPos;
 
     [Header("Position Settings")]
     #region smoothPos
@@ -79,6 +80,10 @@ public class RaycastControl : MonoBehaviour
     {
         obj.transform.DOKill();
 
+        if (obj.GetComponent<selfPos>().enableAdsorption) DOTween.To(() => outPutPos, x => outPutPos = x, obj.transform.position, 0.2f);
+
+        else outPutPos = smoothPos;
+
         if (obj.tag == "UI")
         {
             obj.transform.DOLocalMoveX(0.5f, .2f).SetEase(Ease.InOutSine);
@@ -94,6 +99,8 @@ public class RaycastControl : MonoBehaviour
 
     void onLeaveAnimation (GameObject obj)
     {
+        if (obj.GetComponent<selfPos>().enableAdsorption) DOTween.To(() => outPutPos, x => outPutPos = x, smoothPos, 0.2f);
+
         obj.transform.DOKill(); // Stop the hover loop
 
         if (obj.tag == "UI")
@@ -113,6 +120,13 @@ public class RaycastControl : MonoBehaviour
 
     void onAnimation(GameObject obj)
     {
+        if (obj.GetComponent<selfPos>().enableAdsorption)
+        {
+            outPutPos = obj.transform.position;
+        }
+
+        else outPutPos = smoothPos;
+
         if (obj.tag == "UI")
         {
             // Get smoothPos relative to obj direction
@@ -189,6 +203,7 @@ public class RaycastControl : MonoBehaviour
         
         // Update SmoothPos
         smoothPos_Update();
+        
     }
 
     void castedObjectRecord ()

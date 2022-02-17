@@ -51,7 +51,7 @@ public class bezierCurve : MonoBehaviour
         Vector3 movingVector = _RaycastControl.movingVector.normalized; //direction
 
         //update Position
-        curve1.anchor1 = _RaycastControl.smoothPos;
+        curve1.anchor1 = _RaycastControl.outPutPos;
         curve1.controlPoint1 = curve1.anchor1 + ((1 - FrontBackWeight) * distance * movingVector * curveStiffness);
 
         curve1.anchor2 =  _RaycastControl.transform.position;
