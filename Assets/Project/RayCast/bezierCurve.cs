@@ -4,6 +4,7 @@ using UnityEditor;
 
 //[ExecuteAlways]
 //[ExecuteInEditMode]
+[RequireComponent(typeof(RaycastControl))]
 public class bezierCurve : MonoBehaviour
 {
     private RaycastControl _RaycastControl;
@@ -12,9 +13,6 @@ public class bezierCurve : MonoBehaviour
     [Range(0f, 1f)] public float t = 0;
 
     [Space(10)]
-    [Header("Curve Settings")]
-    [Range(0f, 1f)] public float FrontBackWeight = 0.5f;
-    [Range(0f, 0.3f), Tooltip("")] public float curveStiffness = 0.1f;
 
     [Header("Gizmo Display")] 
     [Range(0f,5f)] public float gizmoSize = 0.1f;
@@ -36,7 +34,6 @@ public class bezierCurve : MonoBehaviour
         if (showGizmoTPoint) curve1.vis_Handle_TPoint();
         if (showBeizerCurve) curve1.vis_handles_Bezier(gizmoSize);
         if (showSampling) curve1.vis_Gizmo_sampling(gizmoSize);
-
     }
 
     public void Start()
@@ -47,16 +44,6 @@ public class bezierCurve : MonoBehaviour
 
     public void Update()
     {
-        float distance = _RaycastControl.distance;
-        Vector3 movingVector = _RaycastControl.movingVector.normalized; //direction
-
-        //update Position
-        curve1.anchor1 = _RaycastControl.outPutPos;
-        curve1.controlPoint1 = curve1.anchor1 + ((1 - FrontBackWeight) * distance * movingVector * curveStiffness);
-
-        curve1.anchor2 =  _RaycastControl.transform.position;
-        curve1.controlPoint2 = curve1.anchor2 + (FrontBackWeight * distance * movingVector * curveStiffness);
-
         curve1.sampling();
         LRUpdate();
     }
@@ -161,7 +148,7 @@ public class CurveSegment
 
     public void visEditor()
     {
-        vis_handles_DoPositionHandle();
+        //vis_handles_DoPositionHandle();
     }
 
     public void vis_Gizmo_CurvePoints(float gizmoSize)

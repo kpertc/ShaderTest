@@ -123,12 +123,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!4 &14770484 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-    type: 3}
-  m_PrefabInstance: {fileID: 1167419631}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &121926993
 GameObject:
   m_ObjectHideFlags: 0
@@ -140,7 +134,7 @@ GameObject:
   - component: {fileID: 121926994}
   m_Layer: 0
   m_Name: UI
-  m_TagString: Untagged
+  m_TagString: UI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -178,9 +172,10 @@ GameObject:
   - component: {fileID: 493689022}
   - component: {fileID: 493689021}
   - component: {fileID: 493689020}
+  - component: {fileID: 493689024}
   m_Layer: 5
   m_Name: Plane
-  m_TagString: Panel
+  m_TagString: UI
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -264,38 +259,30 @@ Transform:
   m_Father: {fileID: 1299544843}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: -359.999, z: -90}
---- !u!1 &738794332
-GameObject:
+--- !u!114 &493689024
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 738794333}
-  m_Layer: 0
-  m_Name: Virtual_Controller
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &738794333
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 738794332}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 935450633}
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 493689019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 112b516ee354be84d91d25759afdf44b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _UIType: 1
+  animTime: 0.2
+  enableSnapping: 0
+  enableHightlight: 1
+  enableOutline: 0
+  enableOutlineIdle: 0
+  enableOutlineHover: 0
+  enableTranslation: 0
+  translationSensitivity: 0.4
+  enableRotation: 0
+  rotationSensitivity: 3
+  initPos: {x: 0, y: 0, z: 0}
 --- !u!1 &824273711
 GameObject:
   m_ObjectHideFlags: 0
@@ -406,6 +393,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112b516ee354be84d91d25759afdf44b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UIType: 0
+  animTime: 0.2
+  enableSnapping: 1
+  enableHightlight: 1
+  enableOutline: 0
+  enableOutlineIdle: 0
+  enableOutlineHover: 0
+  enableTranslation: 0
+  translationSensitivity: 0.4
+  enableRotation: 0
+  rotationSensitivity: 3
   initPos: {x: 0, y: 0, z: 0}
 --- !u!1 &878414650
 GameObject:
@@ -517,6 +515,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112b516ee354be84d91d25759afdf44b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UIType: 0
+  animTime: 0.2
+  enableSnapping: 1
+  enableHightlight: 1
+  enableOutline: 1
+  enableOutlineIdle: 0
+  enableOutlineHover: 0.1
+  enableTranslation: 1
+  translationSensitivity: 0.4
+  enableRotation: 1
+  rotationSensitivity: 3
   initPos: {x: 0, y: 0, z: 0}
 --- !u!1 &935450628
 GameObject:
@@ -533,6 +542,7 @@ GameObject:
   - component: {fileID: 935450634}
   - component: {fileID: 935450637}
   - component: {fileID: 935450636}
+  - component: {fileID: 935450638}
   m_Layer: 0
   m_Name: Controller
   m_TagString: Untagged
@@ -598,13 +608,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 935450628}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.3, y: 0, z: -4.7}
+  m_LocalPosition: {x: 10, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 14770484}
-  m_Father: {fileID: 738794333}
-  m_RootOrder: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &935450634
 MonoBehaviour:
@@ -621,26 +630,27 @@ MonoBehaviour:
   isCasted: 1
   CastedObject: Nothing
   lastCastedObject: {fileID: 0}
+  defaultDistance: 5
   hitPosition: {x: 0, y: 0, z: 0}
   hitPositionNormal: {x: 0, y: 0, z: 0}
   hitPositionNormalRotation: {x: 0, y: 0, z: 0}
   hitPointDistance: 0
-  smoothTime: 0.1
+  outPutPos: {x: 0, y: 0, z: 0}
+  smoothTime: 0.15
   directPosSurfaceNormalOffset: 0.1
   directPos: {x: 0, y: 0, z: 0}
   smoothPos: {x: 0, y: 0, z: 0}
+  FrontBackWeight: 0.5
+  curveStiffness: 0.1
+  curveControlPointXOffset: 1
   distance: 0
   movingVector: {x: 0, y: 0, z: 0}
   showDir: 1
   showHit: 1
   showHitNormal: 1
-  gizmoSphereSize: 0.1
+  gizmoSphereSize: 0.3
   showDirectPos: 1
   showSmoothPos: 1
-  enableTranslation: 1
-  enableRotation: 1
-  translationIntensity: 0.4
-  rotationIntensity: 3
 --- !u!114 &935450635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -812,10 +822,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   t: 0
-  FrontBackWeight: 0.5
-  curveStiffness: 0.1
   gizmoSize: 0.05
-  showGizmoPoints: 0
+  showGizmoPoints: 1
   showGizmoTPoint: 0
   showBeizerCurve: 0
   showSampling: 0
@@ -906,75 +914,18 @@ MonoBehaviour:
   - {x: 6.1854916, y: 0, z: -4.6145725}
   - {x: 6.2705665, y: 0, z: -4.678041}
   - {x: 6.3, y: 0, z: -4.7}
---- !u!1001 &1167419631
-PrefabInstance:
+--- !u!114 &935450638
+MonoBehaviour:
   m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 935450633}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: 869b72b5d76534c4bb18d7e3e951d62a,
-        type: 3}
-      propertyPath: m_Name
-      value: OculusTouchForQuest2_Right
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 869b72b5d76534c4bb18d7e3e951d62a, type: 3}
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 935450628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de406b11dc2a7674fada79a40dcd450f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1168411705
 GameObject:
   m_ObjectHideFlags: 0
@@ -1248,6 +1199,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112b516ee354be84d91d25759afdf44b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UIType: 0
+  animTime: 0.2
+  enableSnapping: 0
+  enableHightlight: 1
+  enableOutline: 0
+  enableOutlineIdle: 0
+  enableOutlineHover: 0
+  enableTranslation: 0
+  translationSensitivity: 0.4
+  enableRotation: 0
+  rotationSensitivity: 3
   initPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1616461605
 GameObject:
@@ -1359,6 +1321,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112b516ee354be84d91d25759afdf44b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UIType: 0
+  animTime: 0.2
+  enableSnapping: 1
+  enableHightlight: 1
+  enableOutline: 1
+  enableOutlineIdle: 0.1
+  enableOutlineHover: 0
+  enableTranslation: 1
+  translationSensitivity: 0.4
+  enableRotation: 1
+  rotationSensitivity: 5
   initPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1798788053
 GameObject:
@@ -1470,6 +1443,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112b516ee354be84d91d25759afdf44b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UIType: 0
+  animTime: 0.2
+  enableSnapping: 0
+  enableHightlight: 1
+  enableOutline: 0
+  enableOutlineIdle: 0
+  enableOutlineHover: 0
+  enableTranslation: 0
+  translationSensitivity: 0.4
+  enableRotation: 0
+  rotationSensitivity: 3
   initPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1835233253
 GameObject:
@@ -1844,6 +1828,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 112b516ee354be84d91d25759afdf44b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _UIType: 0
+  animTime: 0.2
+  enableSnapping: 0
+  enableHightlight: 1
+  enableOutline: 0
+  enableOutlineIdle: 0
+  enableOutlineHover: 0
+  enableTranslation: 0
+  translationSensitivity: 0.4
+  enableRotation: 0
+  rotationSensitivity: 3
   initPos: {x: 0, y: 0, z: 0}
 --- !u!1 &2052071185
 GameObject:

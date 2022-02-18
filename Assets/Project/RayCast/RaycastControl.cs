@@ -5,13 +5,14 @@ using UnityEngine;
 using UnityEditor;
 using DG.Tweening;
 
-//[ExecuteAlways]
+[RequireComponent(typeof(raycastControlGizmo))]
 public class RaycastControl : MonoBehaviour
 {
     [Header("Raycast Parameters (ReadOnly)")]
     [readOnlyAttribute] public bool isCasted;
     [readOnlyAttribute] public string CastedObject = "Nothing";
     [readOnlyAttribute] public GameObject lastCastedObject;
+    [Range(0, 10f)] public float defaultDistance;
 
     [Space(10)]
     private GameObject CastedObjectDelay;
@@ -21,6 +22,10 @@ public class RaycastControl : MonoBehaviour
     [HideInInspector] public Vector3 hitPositionNormal;
     [HideInInspector] public Vector3 hitPositionNormalRotation;
     [HideInInspector] public float hitPointDistance;
+    
+    //snapped curve control
+    //[HideInInspector] 
+    //[HideInInspector]
     [HideInInspector] public Vector3 outPutPos;
 
     [Header("Position Settings")]
@@ -32,16 +37,25 @@ public class RaycastControl : MonoBehaviour
     [readOnlyAttribute] public Vector3 directPos;
     [readOnlyAttribute] public Vector3 smoothPos;
         
+    
     //[ReadOnly] public Vector3 Offset = new Vector3(0,0,0);
+    [Header("Bezier Curve Control")]
+    [Range(0f, 1f)] public float FrontBackWeight = 0.5f;
+    [Range(0f, 0.3f), Tooltip("")] public float curveStiffness = 0.1f;
+    [Range(0f, 10f)] public float curveControlPointXOffset;
+
     [readOnlyAttribute] public float distance;
     [readOnlyAttribute] public Vector3 movingVector;
+    
+    //
+    private CurveSegment _curve;
     private Vector3 velocity = Vector3.zero;
     
     public void smoothPos_Update() // Lerp Integration
     {
         //Vector3 targetPosition = directPos.TransformPoint(Offset);
 
-        movingVector = directPos - smoothPos;
+        movingVector = (directPos - smoothPos).normalized;
 
         smoothPos = Vector3.SmoothDamp(smoothPos, directPos, ref velocity, smoothTime);
 
@@ -62,15 +76,6 @@ public class RaycastControl : MonoBehaviour
     public bool showDirectPos;
     public bool showSmoothPos;
 
-    [Space(5)]
-    [Header("Hover Effect Control")]
-    
-    public bool enableTranslation;
-    public bool enableRotation;
-
-    [Range(0f, 1f)] public float translationIntensity = 0.3f;
-    [Range(0f, 10f)]public float rotationIntensity = 1;
-
     //Events
     public event Action<GameObject> onRayCastEnter;
     public event Action<GameObject> onRayCasting;
@@ -78,79 +83,99 @@ public class RaycastControl : MonoBehaviour
 
     void onEnterAnimation (GameObject obj)
     {
+        if (obj.layer != 5) return; //if collided obj is not UI
+        
+        // Get info
+        UIControl _UIControl = obj.GetComponent<UIControl>();
+        
         obj.transform.DOKill();
 
-        if (obj.GetComponent<selfPos>().enableAdsorption) DOTween.To(() => outPutPos, x => outPutPos = x, obj.transform.position, 0.2f);
-
-        else outPutPos = smoothPos;
-
-        if (obj.tag == "UI")
+        if (_UIControl._UIType == UIControl.UIType.UI)
         {
-            obj.transform.DOLocalMoveX(0.5f, .2f).SetEase(Ease.InOutSine);
-            obj.transform.DOScale(new Vector3(0.1f, 4 * 1.1f, 3 * 1.1f), .2f).SetEase(Ease.OutSine);
-            //obj.transform.DOScale(new Vector3(0.1f, 4 * 1.05f, 3 * 1.05f), .2f).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo);
-        
-            obj.GetComponent<Renderer>().material.DOFloat(0.08f, "_OutlineWidth", 0.2f).SetEase(Ease.OutSine);
+            obj.transform.DOLocalMoveX(0.5f, _UIControl.animTime).SetEase(Ease.InOutSine);
+            obj.transform.DOScale(new Vector3(0.1f, 4 * 1.1f, 3 * 1.1f), _UIControl.animTime).SetEase(Ease.OutSine);
+            obj.GetComponent<Renderer>().material.DOFloat(_UIControl.enableOutlineHover, "_OutlineWidth", _UIControl.animTime).SetEase(Ease.OutSine);
         }
         
         //Turn-on Hightlight
-        obj.GetComponent<Renderer>().material.DOFloat(0.5f, "_intensity", 0.2f).SetEase(Ease.OutSine);
+        if (_UIControl.enableHightlight) obj.GetComponent<Renderer>().material.DOFloat(0.5f, "_intensity", _UIControl.animTime).SetEase(Ease.OutSine);
     }
 
     void onLeaveAnimation (GameObject obj)
-    {
-        if (obj.GetComponent<selfPos>().enableAdsorption) DOTween.To(() => outPutPos, x => outPutPos = x, smoothPos, 0.2f);
+    {   
+        if (obj.layer != 5) return; //if collided obj is not UI
+        
+        // Get info
+        UIControl _UIControl = obj.GetComponent<UIControl>();
+        
+        // Snapping
+        if (obj.GetComponent<UIControl>().enableSnapping) DOTween.To(() => outPutPos, x => outPutPos = x, smoothPos, smoothTime).SetEase(Ease.InExpo);
 
         obj.transform.DOKill(); // Stop the hover loop
 
-        if (obj.tag == "UI")
+        if (_UIControl._UIType == UIControl.UIType.UI)
         {
-            obj.transform.DOLocalRotate(new Vector3(0, 0, 0), .05f).SetEase(Ease.InSine); // Stop Rotation first
+            obj.transform.DOLocalRotate(new Vector3(0, 0, 0), _UIControl.animTime).SetEase(Ease.InExpo); // Stop Rotation first
 
-            obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos, .3f).SetEase(Ease.InOutSine);
+            obj.transform.DOLocalMove(obj.GetComponent<UIControl>().initPos, _UIControl.animTime).SetEase(Ease.InExpo);
 
-            obj.transform.DOScale(new Vector3(0.1f, 4, 3), .2f).SetEase(Ease.OutSine);
+            obj.transform.DOScale(new Vector3(0.1f, 4, 3), _UIControl.animTime).SetEase(Ease.InExpo);
 
-            obj.GetComponent<Renderer>().material.DOFloat(0.0f, "_OutlineWidth", 0.2f).SetEase(Ease.OutSine);
+            obj.GetComponent<Renderer>().material.DOFloat(_UIControl.enableOutlineIdle, "_OutlineWidth", _UIControl.animTime).SetEase(Ease.InExpo);
         }
         
         //Turn-off HighLight
-        obj.GetComponent<Renderer>().material.DOFloat(0f, "_intensity", 0.2f).SetEase(Ease.OutSine);
+        obj.GetComponent<Renderer>().material.DOFloat(0f, "_intensity", _UIControl.animTime).SetEase(Ease.OutSine);
     }
 
     void onAnimation(GameObject obj)
     {
-        if (obj.GetComponent<selfPos>().enableAdsorption)
+        if (obj.layer != 5) return; //if collided obj is not UI
+            
+        // Get info
+        UIControl _UIControl = obj.GetComponent<UIControl>();
+        
+        // Snapping
+        if (_UIControl.enableSnapping)
         {
-            outPutPos = obj.transform.position;
+            DOTween.To(() => outPutPos, x => outPutPos = x, obj.transform.position, smoothTime);
+
+            //smoothPos is already smoothed, not need for another tweening
+            _curve.anchor1 = outPutPos; 
+            _curve.controlPoint1 = smoothPos + ((1 - FrontBackWeight) * distance * movingVector * curveStiffness) + new Vector3(curveControlPointXOffset, 0, 0); ;
+
+            _curve.anchor2 =  transform.position;
+            _curve.controlPoint2 = _curve.anchor2 + (FrontBackWeight * distance * movingVector * curveStiffness);
+        }
+        else
+        {
+            outPutPos = smoothPos;
+            defaultCurveControl();
         }
 
-        else outPutPos = smoothPos;
-
-        if (obj.tag == "UI")
+        if (_UIControl._UIType == UIControl.UIType.UI)
         {
             // Get smoothPos relative to obj direction
             Vector3 rotDir = (smoothPos - obj.transform.position).normalized; //x is height // Y Z is moving
-        
             // Translation
-            if (enableTranslation) obj.transform.DOLocalMove(obj.GetComponent<selfPos>().initPos + new Vector3(0, rotDir.y, rotDir.z) * translationIntensity, .02f).SetEase(Ease.InSine);
-            
+            if (_UIControl.enableTranslation) obj.transform.DOLocalMove(_UIControl.initPos + new Vector3(0, rotDir.y, rotDir.z) * _UIControl.translationSensitivity, _UIControl.animTime).SetEase(Ease.InSine);
             //rotation
-            if (enableRotation) obj.transform.DOLocalRotate(new Vector3(0,- rotDir.z, rotDir.y) * rotationIntensity, .05f).SetEase(Ease.InSine);
-        
+            if (_UIControl.enableRotation) obj.transform.DOLocalRotate(new Vector3(0,- rotDir.z, rotDir.y) * _UIControl.rotationSensitivity, _UIControl.animTime).SetEase(Ease.InSine);
             // HighLight
-            obj.GetComponent<Renderer>().material.DOVector(hitPosition, "_inputWS",0.05f);
+            obj.GetComponent<Renderer>().material.DOVector(hitPosition, "_inputWS",_UIControl.animTime);
         }
         
-        else if (obj.tag == "Panel")
+        else if (_UIControl._UIType == UIControl.UIType.Panel)
         {
             // HighLight
-            obj.GetComponent<Renderer>().material.DOVector(smoothPos, "_inputWS",0.05f);
+            obj.GetComponent<Renderer>().material.DOVector(smoothPos, "_inputWS",_UIControl.animTime);
         }
     }
 
     private void OnEnable()
     {
+        _curve = GetComponent<bezierCurve>().curve1;
+        
         onRayCastEnter += (objName) => { if (objName != null && objName.layer == 5) onEnterAnimation(objName); };
         onRayCasting += (objName) => { if (objName != null && objName.layer == 5) onAnimation(objName); };
         onRayCastLeave += (objName) => { if (objName != null && objName.layer == 5) onLeaveAnimation(objName); };
@@ -173,6 +198,7 @@ public class RaycastControl : MonoBehaviour
             castedGameObject = hit.collider.gameObject;
             CastedObject = castedGameObject.name;
             
+            
             //check object to trigger enter&leave event
             castedObjectRecord ();
 
@@ -189,21 +215,30 @@ public class RaycastControl : MonoBehaviour
 
             // directPos Normal Offset
             directPos = hit.point + hit.normal * directPosSurfaceNormalOffset;
+
+            smoothPos_Update();
+
+            outPutPos = smoothPos;
         }
 
         else
         {
-            //update objects
+            // update objects
             castedGameObject = null;
             CastedObject = "Nothing";
 
-            //check object to trigger enter&leave event
+            // check object to trigger enter&leave event
             castedObjectRecord();
+            
+            // default Raycast to space
+            directPos = transform.position + transform.forward * hitPointDistance;
+
+            smoothPos_Update();
+
+            defaultCurveControl();
+
+            outPutPos = smoothPos;
         }
-        
-        // Update SmoothPos
-        smoothPos_Update();
-        
     }
 
     void castedObjectRecord ()
@@ -227,50 +262,17 @@ public class RaycastControl : MonoBehaviour
         CastedObjectDelay = castedGameObject;
     }
 
-    void OnDrawGizmos()
+    //update Position
+    void defaultCurveControl()
     {
-        if (isCasted)
-        {
-            if (showHitNormal) {
-                Gizmos.color = Color.blue;
-                Gizmos.DrawLine(hitPosition, hitPosition + hitPositionNormal);
-            }
+        DOTween.To(() => _curve.anchor1, x => _curve.anchor1 = x, outPutPos, smoothTime);
+        //Vector3 CCP1 = _curve.anchor1 + ((1 - FrontBackWeight) * distance * movingVector * curveStiffness);
+        //DOTween.To(() => _curve.controlPoint1, x => _curve.controlPoint1 = x, CCP1, smoothTime);
 
-            if (showHit)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawSphere(hitPosition, gizmoSphereSize);
-            }
+        _curve.controlPoint1 = _curve.anchor1 + ((1 - FrontBackWeight) * distance * movingVector * curveStiffness);
 
-            if (showDirectPos)
-            {
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawSphere(directPos, gizmoSphereSize);
-            }
-
-            if (showSmoothPos)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawSphere(smoothPos, gizmoSphereSize);
-            }
-        }
-
-        
-
-        //Show Controller Object Dir
-        if (showDir)
-        {
-            //Forward
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(transform.position, transform.position + transform.forward * 10);
-
-            //Upward
-            Gizmos.color = Color.green;
-            Gizmos.DrawLine(transform.position, transform.position + transform.up);
-
-            //right
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, transform.position + transform.right);
-        }
-    }    
+        DOTween.To(() => _curve.anchor2, x => _curve.anchor2 = x, transform.position, smoothTime);
+        Vector3 CCP2 = _curve.anchor2 + (FrontBackWeight * distance * movingVector * curveStiffness);
+        DOTween.To(() => _curve.controlPoint2, x => _curve.controlPoint2 = x, CCP2, smoothTime);
+    }
 }
